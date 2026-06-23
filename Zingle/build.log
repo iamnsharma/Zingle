@@ -1,0 +1,69 @@
+
+> Zingle@0.0.1 android
+> react-native run-android
+
+info A dev server is already running for this project on port 8081.
+* daemon not running; starting now at tcp:5037
+* daemon started successfully
+info Installing the app...
+> Task :gradle-plugin:settings-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:shared:processResources NO-SOURCE
+> Task :gradle-plugin:settings-plugin:pluginDescriptors
+> Task :gradle-plugin:settings-plugin:processResources
+> Task :gradle-plugin:shared:compileKotlin
+> Task :gradle-plugin:shared:compileJava NO-SOURCE
+> Task :gradle-plugin:shared:classes UP-TO-DATE
+> Task :gradle-plugin:shared:jar
+> Task :gradle-plugin:settings-plugin:compileKotlin
+> Task :gradle-plugin:settings-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:settings-plugin:classes
+> Task :gradle-plugin:settings-plugin:jar
+> Task :gradle-plugin:react-native-gradle-plugin:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :gradle-plugin:react-native-gradle-plugin:pluginDescriptors
+> Task :gradle-plugin:react-native-gradle-plugin:processResources
+> Task :gradle-plugin:react-native-gradle-plugin:compileKotlin
+> Task :gradle-plugin:react-native-gradle-plugin:compileJava NO-SOURCE
+> Task :gradle-plugin:react-native-gradle-plugin:classes
+> Task :gradle-plugin:react-native-gradle-plugin:jar
+
+> Configure project :react-native-mmkv
+[NitroModules] 🔥 NitroMmkv is boosted by nitro!
+
+[Incubating] Problems report is available at: file:///Users/aman/Documents/Learning/Zingle/android/build/reports/problems/problems-report.html
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+10 actionable tasks: 10 executed
+
+info 💡 Tip: Make sure that you have set up your development environment correctly, by running npx react-native doctor. To read more about doctor command visit: https://github.com/react-native-community/cli/blob/main/packages/cli-doctor/README.md#doctor 
+
+
+FAILURE: Build failed with an exception.
+
+* Where:
+Build file '/Users/aman/Documents/Learning/Zingle/node_modules/react-native-mmkv/android/build.gradle' line: 145
+
+* What went wrong:
+A problem occurred evaluating project ':react-native-mmkv'.
+> Project with path ':react-native-nitro-modules' could not be found in project ':react-native-mmkv'.
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 19s
+error Failed to install the app. Command failed with exit code 1: ./gradlew app:installDebug -PreactNativeDevServerPort=8081 FAILURE: Build failed with an exception. * Where:
+Build file '/Users/aman/Documents/Learning/Zingle/node_modules/react-native-mmkv/android/build.gradle' line: 145 * What went wrong:
+A problem occurred evaluating project ':react-native-mmkv'.
+> Project with path ':react-native-nitro-modules' could not be found in project ':react-native-mmkv'. * Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org. BUILD FAILED in 19s.
+info Run CLI with --verbose flag for more details.

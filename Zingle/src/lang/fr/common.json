@@ -1,0 +1,67 @@
+{
+  "t": {
+    "common": {
+      "welcome": "Bienvenue sur Zingle",
+      "loading": "Chargement...",
+      "error": "Une erreur s'est produite",
+      "retry": "Réessayer",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "delete": "Supprimer",
+      "edit": "Modifier",
+      "close": "Fermer",
+      "ok": "OK",
+      "back": "Retour"
+    },
+    "auth": {
+      "login": "Connexion",
+      "signup": "S'inscrire",
+      "logout": "Déconnexion",
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "forgotPassword": "Mot de passe oublié ?",
+      "resetPassword": "Réinitialiser le mot de passe",
+      "signupDescription": "Créez votre compte pour commencer",
+      "loginDescription": "Bienvenue, connectez-vous à votre compte",
+      "emailPlaceholder": "Entrez votre adresse e-mail",
+      "passwordPlaceholder": "Entrez votre mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "confirmPasswordPlaceholder": "Confirmez votre mot de passe",
+      "alreadyHaveAccount": "Vous avez déjà un compte ?",
+      "dontHaveAccount": "Vous n'avez pas de compte ?",
+      "invalidEmail": "Veuillez entrer une adresse e-mail valide",
+      "passwordTooShort": "Le mot de passe doit contenir au moins 6 caractères",
+      "passwordsMismatch": "Les mots de passe ne correspondent pas"
+    },
+    "navigation": {
+      "home": "Accueil",
+      "discover": "Découvrir",
+      "favorites": "Favoris",
+      "profile": "Profil"
+    },
+    "home": {
+      "title": "Découvrez les connexions",
+      "noProfiles": "Plus de profils",
+      "like": "J'aime",
+      "pass": "Passer"
+    },
+    "profile": {
+      "title": "Mon profil",
+      "editProfile": "Modifier le profil",
+      "settings": "Paramètres",
+      "logout": "Déconnexion",
+      "bio": "Biographie",
+      "age": "Âge",
+      "location": "Localisation",
+      "interests": "Intérêts",
+      "photos": "Photos"
+    },
+    "errors": {
+      "networkError": "Erreur réseau. Veuillez vérifier votre connexion",
+      "serverError": "Erreur du serveur. Veuillez réessayer plus tard",
+      "unauthorized": "Non autorisé. Veuillez vous connecter à nouveau",
+      "notFound": "Non trouvé",
+      "validationError": "Veuillez vérifier votre entrée"
+    }
+  }
+}

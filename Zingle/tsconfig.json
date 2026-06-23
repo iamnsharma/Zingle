@@ -1,0 +1,38 @@
+{
+  "extends": "@react-native/typescript-config",
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["**/node_modules", "**/Pods"],
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@components": ["./src/components"],
+      "@components/*": ["./src/components/*"],
+      "@screens": ["./src/screens"],
+      "@screens/*": ["./src/screens/*"],
+      "@navigation": ["./src/navigation"],
+      "@navigation/*": ["./src/navigation/*"],
+      "@utils": ["./src/utils"],
+      "@utils/*": ["./src/utils/*"],
+      "@services": ["./src/services"],
+      "@services/*": ["./src/services/*"],
+      "@context": ["./src/context"],
+      "@context/*": ["./src/context/*"],
+      "@hooks": ["./src/hooks"],
+      "@hooks/*": ["./src/hooks/*"],
+      "@styling": ["./src/styling"],
+      "@styling/*": ["./src/styling/*"],
+      "@assets": ["./src/assets"],
+      "@assets/*": ["./src/assets/*"],
+      "@lang": ["./src/lang"],
+      "@lang/*": ["./src/lang/*"],
+      "@types": ["./src/types"],
+      "@types/*": ["./src/types/*"],
+      "@stores": ["./src/stores"],
+      "@stores/*": ["./src/stores/*"],
+      "@config": ["./src/config"],
+      "@config/*": ["./src/config/*"],
+      "@constants": ["./src/constants"],
+      "@constants/*": ["./src/constants/*"]
+    }
+  }
+}

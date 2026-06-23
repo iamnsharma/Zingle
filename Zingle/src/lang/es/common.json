@@ -1,0 +1,67 @@
+{
+  "t": {
+    "common": {
+      "welcome": "Bienvenido a Zingle",
+      "loading": "Cargando...",
+      "error": "Algo salió mal",
+      "retry": "Reintentar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "close": "Cerrar",
+      "ok": "OK",
+      "back": "Atrás"
+    },
+    "auth": {
+      "login": "Iniciar sesión",
+      "signup": "Registrarse",
+      "logout": "Cerrar sesión",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "forgotPassword": "¿Olvidó su contraseña?",
+      "resetPassword": "Restablecer contraseña",
+      "signupDescription": "Crea tu cuenta para empezar",
+      "loginDescription": "Bienvenido de vuelta, inicia sesión en tu cuenta",
+      "emailPlaceholder": "Ingrese su correo electrónico",
+      "passwordPlaceholder": "Ingrese su contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "confirmPasswordPlaceholder": "Confirme su contraseña",
+      "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+      "dontHaveAccount": "¿No tienes una cuenta?",
+      "invalidEmail": "Por favor, ingrese un correo válido",
+      "passwordTooShort": "La contraseña debe tener al menos 6 caracteres",
+      "passwordsMismatch": "Las contraseñas no coinciden"
+    },
+    "navigation": {
+      "home": "Inicio",
+      "discover": "Descubrir",
+      "favorites": "Favoritos",
+      "profile": "Perfil"
+    },
+    "home": {
+      "title": "Descubre conexiones",
+      "noProfiles": "No hay más perfiles",
+      "like": "Me gusta",
+      "pass": "Pasar"
+    },
+    "profile": {
+      "title": "Mi perfil",
+      "editProfile": "Editar perfil",
+      "settings": "Configuración",
+      "logout": "Cerrar sesión",
+      "bio": "Biografía",
+      "age": "Edad",
+      "location": "Ubicación",
+      "interests": "Intereses",
+      "photos": "Fotos"
+    },
+    "errors": {
+      "networkError": "Error de red. Por favor, verifica tu conexión",
+      "serverError": "Error del servidor. Por favor, inténtalo más tarde",
+      "unauthorized": "No autorizado. Por favor, inicia sesión de nuevo",
+      "notFound": "No encontrado",
+      "validationError": "Por favor, verifica tu entrada"
+    }
+  }
+}
