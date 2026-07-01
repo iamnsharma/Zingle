@@ -24,7 +24,9 @@ function App() {
         <PaperProvider theme={theme}>
           <StatusBar
             barStyle={theme.dark ? 'light-content' : 'dark-content'}
-            backgroundColor={theme.colors.background}
+            backgroundColor="transparent"
+            translucent
+            animated
           />
           <RootNavigator />
         </PaperProvider>

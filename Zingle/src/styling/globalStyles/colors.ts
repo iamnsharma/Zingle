@@ -7,10 +7,13 @@ export const baseColors = {
 };
 
 export const tinderColors = {
-  // Tinder Primary - Hot Red/Orange (Action/Swipe Right)
-  tinderRed: '#FF5864',
+  // Premium Tinder Palette - Updated
+  tinderRed: '#FF4458',
   tinderRedLight: '#FF7A8B',
   tinderRedDark: '#E63946',
+
+  tinderSecondary: '#FD5068',
+  tinderAccent: '#FF9A7A',
 
   // Tinder Secondary - Soft Blue (Pass/Swipe Left)
   tinderBlue: '#0099FF',
@@ -125,6 +128,23 @@ export const lightColors = {
   pass: tinderColors.neutral400,
   superlike: tinderColors.tinderGold,
   match: tinderColors.tinderGreen,
+
+  // Gradients
+  gradientPrimary: [tinderColors.tinderRed, tinderColors.tinderSecondary, tinderColors.tinderAccent],
+  gradientOverlay: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.6)'],
+  gradientAuthScreen: [
+    'rgba(255, 68, 88, 0.18)',
+    'rgba(0, 0, 0, 0.2)',
+    'rgba(0, 0, 0, 0.72)',
+    'rgba(255, 68, 88, 0.42)',
+  ],
+  gradientAuthLocations: [0, 0.3, 0.65, 1] as number[],
+  /** Tinder-style auth screens: coral → hot pink → deep rose */
+  gradientAuthTinder: ['#FF7854', '#FD267D', '#E73757'],
+  gradientAuthTinderLocations: [0, 0.55, 1] as number[],
+  // Glassmorphism
+  glassDark: 'rgba(0, 0, 0, 0.1)',
+  glassLight: 'rgba(255, 255, 255, 0.15)',
 };
 
 export const darkColors = {
@@ -184,6 +204,23 @@ export const darkColors = {
   pass: tinderColors.dark600,
   superlike: tinderColors.tinderGoldLight,
   match: tinderColors.tinderGreen,
+
+  // Gradients
+  gradientPrimary: [tinderColors.tinderRedLight, tinderColors.tinderSecondary, tinderColors.tinderAccent],
+  gradientOverlay: ['rgba(0, 0, 0, 0)', 'rgba(0, 0, 0, 0.8)'],
+  gradientAuthScreen: [
+    'rgba(255, 68, 88, 0.22)',
+    'rgba(15, 17, 23, 0.35)',
+    'rgba(15, 17, 23, 0.82)',
+    'rgba(255, 68, 88, 0.48)',
+  ],
+  gradientAuthLocations: [0, 0.3, 0.65, 1] as number[],
+  /** Tinder-style auth screens: coral → hot pink → deep rose */
+  gradientAuthTinder: ['#FF7854', '#FD267D', '#E73757'],
+  gradientAuthTinderLocations: [0, 0.55, 1] as number[],
+  // Glassmorphism
+  glassDark: 'rgba(0, 0, 0, 0.3)',
+  glassLight: 'rgba(255, 255, 255, 0.08)',
 };
 
 export type ColorScheme = typeof lightColors;

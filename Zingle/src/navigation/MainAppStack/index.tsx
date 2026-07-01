@@ -1,35 +1,29 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MainAppStackParamList } from '@types';
+import { useOnboardingStore } from '@stores/onboardingStore';
 import { BottomTabNavigator } from '../BottomTabNavigator';
+import { OnboardingContainer } from '@screens/Onboarding';
 
 const Stack = createNativeStackNavigator<MainAppStackParamList>();
 
-// Placeholder screens
-const ProfileDetailScreen = () => null;
-const ChatScreen = () => null;
-const MatchedProfilesScreen = () => null;
-
 export const MainAppStack = () => {
+  const { isCompleted } = useOnboardingStore();
+
   return (
     <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
+      screenOptions={{ headerShown: false }}
+      initialRouteName={isCompleted ? 'MainBottomTab' : 'Onboarding'}
     >
-      <Stack.Screen
-        name="MainBottomTab"
-        component={BottomTabNavigator}
-      />
-      <Stack.Group
-        screenOptions={{
-          presentation: 'modal',
-        }}
-      >
-        <Stack.Screen name="ProfileDetail" component={ProfileDetailScreen} />
-        <Stack.Screen name="Chat" component={ChatScreen} />
-        <Stack.Screen name="MatchedProfiles" component={MatchedProfilesScreen} />
-      </Stack.Group>
+      <Stack.Screen name="MainBottomTab" component={BottomTabNavigator} />
+      <Stack.Screen name="Onboarding">
+        {({ navigation }) => (
+          <OnboardingContainer
+            onComplete={() => navigation.replace('MainBottomTab')}
+            onSkip={() => navigation.replace('MainBottomTab')}
+          />
+        )}
+      </Stack.Screen>
     </Stack.Navigator>
   );
 };

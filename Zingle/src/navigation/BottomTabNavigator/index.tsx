@@ -1,93 +1,126 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useThemeStore } from '@stores';
-import { MainBottomTabParamList } from '@types';
+import type { MainBottomTabParamList } from '@types';
 import { metrics } from '@styling/metrics';
-import { HomeScreen } from '@screens/Home';
-import { ProfileScreen } from '@screens/Profile';
+import { HomeScreen } from '@screens/Home/SwipeScreen';
+import { ChatListScreen } from '@screens/Chat/ListScreen';
+import { LikesScreen } from '@screens/Likes';
+import { ProfileScreen } from '@screens/Profile/ViewScreen';
 
 const Tab = createBottomTabNavigator<MainBottomTabParamList>();
 
-const styles = StyleSheet.create({
-  placeholderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+const TAB_BAR_HEIGHT = 56;
 
-// Placeholder screens for Discover and Favorites
-const DiscoverScreen = () => {
-  const { View } = require('react-native');
-  const { BaseText } = require('@components/atoms');
+/** Tinder-style tab config: label + outline/filled icon pairs */
+const TAB_CONFIG = {
+  Home: {
+    label: 'Swipe',
+    iconOutline: 'cards-outline',
+    iconFilled: 'cards',
+  },
+  Likes: {
+    label: 'Likes',
+    iconOutline: 'heart-outline',
+    iconFilled: 'heart',
+  },
+  Chat: {
+    label: 'Messages',
+    iconOutline: 'message-text-outline',
+    iconFilled: 'message-text',
+  },
+  Profile: {
+    label: 'Profile',
+    iconOutline: 'account-outline',
+    iconFilled: 'account',
+  },
+} as const;
+
+type TabRouteName = keyof typeof TAB_CONFIG;
+
+interface TabBarIconProps {
+  routeName: TabRouteName;
+  color: string;
+  size: number;
+  focused: boolean;
+}
+
+const TabBarIcon: React.FC<TabBarIconProps> = ({
+  routeName,
+  color,
+  size,
+  focused,
+}) => {
+  const config = TAB_CONFIG[routeName];
   return (
-    <View style={styles.placeholderContainer}>
-      <BaseText children="Discover Screen - Coming Soon" />
-    </View>
+    <MaterialCommunityIcons
+      name={focused ? config.iconFilled : config.iconOutline}
+      size={size || 27}
+      color={color}
+    />
   );
 };
 
-const FavoritesScreen = () => {
-  const { View } = require('react-native');
-  const { BaseText } = require('@components/atoms');
-  return (
-    <View style={styles.placeholderContainer}>
-      <BaseText children="Favorites Screen - Coming Soon" />
-    </View>
+type TabIconComponent = NonNullable<BottomTabNavigationOptions['tabBarIcon']>;
+
+const createTabIcon = (routeName: TabRouteName): TabIconComponent => {
+  const TabIcon: TabIconComponent = ({ color, size, focused }) => (
+    <TabBarIcon
+      routeName={routeName}
+      color={color}
+      size={size}
+      focused={focused}
+    />
   );
+  return TabIcon;
+};
+
+const TAB_BAR_ICONS: Record<TabRouteName, TabIconComponent> = {
+  Home: createTabIcon('Home'),
+  Likes: createTabIcon('Likes'),
+  Chat: createTabIcon('Chat'),
+  Profile: createTabIcon('Profile'),
 };
 
 export const BottomTabNavigator = () => {
   const { theme } = useThemeStore();
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, metrics.spacing.sm);
 
   return (
     <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarStyle: {
-          backgroundColor: theme.colors.surface,
-          borderTopColor: theme.colors.outline,
-          height: metrics.spacing['3xl'] + metrics.spacing.md,
-          paddingBottom: metrics.spacing.md,
-          paddingTop: metrics.spacing.sm,
-        },
-        tabBarActiveTintColor: theme.colors.primary,
-        tabBarInactiveTintColor: theme.custom.textTertiary,
-        tabBarLabelStyle: {
-          fontSize: 12,
-          marginTop: metrics.spacing.xs,
-        },
+      screenOptions={({ route }) => {
+        const config = TAB_CONFIG[route.name as TabRouteName];
+        return {
+          headerShown: false,
+          title: config.label,
+          tabBarStyle: {
+            backgroundColor: theme.colors.surface,
+            borderTopColor: theme.custom.border,
+            borderTopWidth: 1,
+            height: TAB_BAR_HEIGHT + bottomInset,
+            paddingBottom: bottomInset,
+            paddingTop: metrics.spacing.xs,
+          },
+          tabBarActiveTintColor: theme.colors.primary,
+          tabBarInactiveTintColor: theme.custom.textTertiary,
+          tabBarLabelStyle: {
+            fontSize: 10,
+            fontWeight: '600',
+            marginTop: 2,
+            letterSpacing: 0.2,
+          },
+          tabBarIcon: TAB_BAR_ICONS[route.name as TabRouteName],
+        };
       }}
     >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          title: 'Home',
-        }}
-      />
-      <Tab.Screen
-        name="Discover"
-        component={DiscoverScreen}
-        options={{
-          title: 'Discover',
-        }}
-      />
-      <Tab.Screen
-        name="Favorites"
-        component={FavoritesScreen}
-        options={{
-          title: 'Favorites',
-        }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={{
-          title: 'Profile',
-        }}
-      />
+      <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Likes" component={LikesScreen} />
+      <Tab.Screen name="Chat" component={ChatListScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
 };

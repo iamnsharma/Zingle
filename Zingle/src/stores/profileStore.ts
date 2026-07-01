@@ -1,18 +1,42 @@
 import { create } from 'zustand';
-import { IProfile } from '@types';
+import type { UserProfile } from '@types';
 
 interface ProfileStoreState {
-  userProfile: IProfile | null;
+  currentUser?: UserProfile;
   loading: boolean;
-  setUserProfile: (profile: IProfile | null) => void;
+  error?: string;
+
+  setCurrentUser: (user: UserProfile | undefined) => void;
+  updateCurrentUser: (updates: Partial<UserProfile>) => void;
+  
   setLoading: (loading: boolean) => void;
-  clearProfile: () => void;
+  setError: (error?: string) => void;
 }
 
 export const useProfileStore = create<ProfileStoreState>((set) => ({
-  userProfile: null,
+  currentUser: undefined,
   loading: false,
-  setUserProfile: (profile: IProfile | null) => set({ userProfile: profile }),
-  setLoading: (loading: boolean) => set({ loading }),
-  clearProfile: () => set({ userProfile: null, loading: false }),
+  error: undefined,
+
+  setCurrentUser: (user: UserProfile | undefined) =>
+    set({
+      currentUser: user,
+    }),
+
+  updateCurrentUser: (updates: Partial<UserProfile>) =>
+    set((state) => ({
+      currentUser: state.currentUser
+        ? { ...state.currentUser, ...updates }
+        : undefined,
+    })),
+
+  setLoading: (loading: boolean) =>
+    set({
+      loading,
+    }),
+
+  setError: (error?: string) =>
+    set({
+      error,
+    }),
 }));

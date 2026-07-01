@@ -5,21 +5,18 @@ export type AuthStackParamList = {
   Landing: undefined;
   Login: undefined;
   Signup: undefined;
-  ResetPassword: undefined;
 };
 
 export type MainBottomTabParamList = {
   Home: undefined;
-  Discover: undefined;
-  Favorites: undefined;
+  Likes: undefined;
+  Chat: undefined;
   Profile: undefined;
 };
 
 export type MainAppStackParamList = {
   MainBottomTab: undefined;
-  ProfileDetail: { userId: string };
-  Chat: { conversationId: string };
-  MatchedProfiles: undefined;
+  Onboarding: undefined;
 };
 
 export type RootStackParamList = AuthStackParamList & MainAppStackParamList;
