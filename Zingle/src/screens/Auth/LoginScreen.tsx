@@ -46,24 +46,31 @@ const styles = StyleSheet.create({
     paddingTop: metrics.spacing['2xl'],
   },
   title: {
+    marginBottom: metrics.spacing.xs,
+  },
+  subtitle: {
     marginBottom: metrics.spacing['2xl'],
+    lineHeight: 22,
   },
   form: {
-    gap: metrics.spacing.sm,
+    gap: metrics.spacing.md,
   },
   forgotPasswordContainer: {
     alignItems: 'flex-end',
-    marginTop: metrics.spacing.sm,
-    marginBottom: metrics.spacing.xl,
+    marginTop: metrics.spacing.xs,
+    marginBottom: metrics.spacing.lg,
   },
   spacer: {
     flex: 1,
-    minHeight: metrics.spacing.xl,
+    minHeight: metrics.spacing['2xl'],
+  },
+  socialSection: {
+    paddingTop: metrics.spacing.md,
+    gap: metrics.spacing.lg,
   },
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: metrics.spacing.lg,
   },
   dividerLine: {
     flex: 1,
@@ -76,8 +83,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: metrics.spacing.sm,
-    paddingTop: metrics.spacing.md,
-    paddingBottom: metrics.spacing.sm,
+    paddingTop: metrics.spacing.xl,
+    paddingBottom: metrics.spacing.md,
   },
   scrollGrow: {
     flexGrow: 1,
@@ -163,6 +170,12 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
             style={styles.title}
             children="Sign in"
           />
+          <BaseText
+            variant="body"
+            color="rgba(255, 255, 255, 0.75)"
+            style={styles.subtitle}
+            children="Welcome back — let's find your next match"
+          />
 
           <View style={styles.form}>
             <BaseInput
@@ -213,22 +226,24 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
 
         <View style={styles.spacer} />
 
-        <View style={styles.divider}>
-          <View
-            style={[styles.dividerLine, { backgroundColor: theme.custom.glassLight }]}
-          />
-          <BaseText
-            variant="body"
-            color="rgba(255, 255, 255, 0.6)"
-            style={styles.dividerText}
-            children="OR"
-          />
-          <View
-            style={[styles.dividerLine, { backgroundColor: theme.custom.glassLight }]}
-          />
-        </View>
+        <View style={styles.socialSection}>
+          <View style={styles.divider}>
+            <View
+              style={[styles.dividerLine, { backgroundColor: theme.custom.glassLight }]}
+            />
+            <BaseText
+              variant="body"
+              color="rgba(255, 255, 255, 0.6)"
+              style={styles.dividerText}
+              children="OR"
+            />
+            <View
+              style={[styles.dividerLine, { backgroundColor: theme.custom.glassLight }]}
+            />
+          </View>
 
-        <GoogleButton onPress={handleGoogleLogin} />
+          <GoogleButton onPress={handleGoogleLogin} />
+        </View>
 
         <View style={styles.footer}>
           <BaseText

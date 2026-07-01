@@ -100,7 +100,8 @@ export const BaseInput = React.forwardRef<TextInput, BaseInputProps>(
     const placeholderTextColor: string = isAuth
       ? 'rgba(255, 255, 255, 0.5)'
       : theme.custom.textTertiary;
-    const selectionColor: string = theme.colors.primary;
+    const selectionColor: string = isAuth ? '#FFFFFF' : theme.colors.primary;
+    const cursorColor: string = isAuth ? '#FFFFFF' : theme.colors.primary;
     const inputTextColor: string = isAuth ? '#FFFFFF' : theme.custom.text;
     const isSecure = showPasswordToggle
       ? !passwordVisible
@@ -135,6 +136,10 @@ export const BaseInput = React.forwardRef<TextInput, BaseInputProps>(
               props.placeholderTextColor ?? placeholderTextColor
             }
             selectionColor={selectionColor}
+            cursorColor={cursorColor}
+            underlineColorAndroid={
+              isAuth ? 'transparent' : props.underlineColorAndroid
+            }
           />
           {showPasswordToggle && (
             <TouchableOpacity

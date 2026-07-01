@@ -7,6 +7,14 @@ export const APP_ICONS = {
   google: require('../assets/icons/google-icon.png'),
 };
 
+/** Zingle brand logo assets */
+export const APP_LOGO = {
+  /** Square app icon — gradient background with Z mark */
+  icon: require('../assets/images/Gemini_Generated_Image_7hvxwm7hvxwm7hvx.png'),
+  /** Flat logo mark on white — for light backgrounds */
+  mark: require('../assets/images/Gemini_Generated_Image_5ph5lp5ph5lp5ph5.png'),
+};
+
 export const AUTH_IMAGES = {
   // Landing: Premium couple/dating vibe
   landing:

@@ -67,6 +67,7 @@ export interface OnboardingData {
   gender?: ProfileGender;
   interestedIn?: ProfileGender[];
   height?: number;
+  heightUnit?: 'cm' | 'ft';
   profession?: string;
   company?: string;
   education?: EducationLevel;

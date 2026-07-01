@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Alert,
   TextInput,
+  Image,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -14,6 +15,7 @@ import { useAuthStore } from '@stores/authStore';
 import { useOnboardingStore } from '@stores/onboardingStore';
 import type { AuthStackParamList } from '@types';
 import { metrics } from '@styling/metrics';
+import { APP_LOGO } from '@constants/images';
 import { BaseText, BaseInput, GradientButton, GoogleButton } from '@components/atoms';
 import { AuthBackground } from '@components/molecules';
 
@@ -38,28 +40,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 32,
   },
-  logo: {
-    fontSize: 32,
-    fontWeight: '800',
-    letterSpacing: -1,
+  logoImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 11,
   },
   formSection: {
     paddingTop: metrics.spacing.xl,
   },
   title: {
+    marginBottom: metrics.spacing.xs,
+  },
+  subtitle: {
     marginBottom: metrics.spacing['2xl'],
+    lineHeight: 22,
   },
   form: {
-    gap: metrics.spacing.sm,
+    gap: metrics.spacing.md,
   },
   spacer: {
     flex: 1,
-    minHeight: metrics.spacing.xl,
+    minHeight: metrics.spacing['2xl'],
+  },
+  socialSection: {
+    paddingTop: metrics.spacing.md,
+    gap: metrics.spacing.lg,
   },
   divider: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: metrics.spacing.lg,
   },
   dividerLine: {
     flex: 1,
@@ -72,19 +81,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: metrics.spacing.sm,
-    paddingTop: metrics.spacing.md,
-    paddingBottom: metrics.spacing.sm,
+    paddingTop: metrics.spacing.xl,
+    paddingBottom: metrics.spacing.md,
   },
   privacyText: {
     textAlign: 'center',
-    marginBottom: metrics.spacing.sm,
+    marginTop: metrics.spacing.lg,
     lineHeight: 18,
+    paddingHorizontal: metrics.spacing.sm,
   },
   scrollGrow: {
     flexGrow: 1,
   },
   submitButton: {
-    marginTop: metrics.spacing.xl,
+    marginTop: metrics.spacing.sm,
   },
   linkBold: {
     fontWeight: '700',
@@ -158,11 +168,11 @@ export const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
             />
           </TouchableOpacity>
           <View style={styles.logoContainer}>
-            <BaseText
-              variant="h1"
-              color="#FFFFFF"
-              style={styles.logo}
-              children="Zingle"
+            <Image
+              source={APP_LOGO.icon}
+              style={styles.logoImage}
+              resizeMode="contain"
+              accessibilityLabel="Zingle"
             />
           </View>
         </View>
@@ -173,6 +183,12 @@ export const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
             color="#FFFFFF"
             style={styles.title}
             children="Create account"
+          />
+          <BaseText
+            variant="body"
+            color="rgba(255, 255, 255, 0.75)"
+            style={styles.subtitle}
+            children="Join Zingle and start meeting people nearby"
           />
 
           <View style={styles.form}>
@@ -229,29 +245,31 @@ export const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
 
         <View style={styles.spacer} />
 
-        <View style={styles.divider}>
-          <View
-            style={[styles.dividerLine, { backgroundColor: theme.custom.glassLight }]}
-          />
+        <View style={styles.socialSection}>
+          <View style={styles.divider}>
+            <View
+              style={[styles.dividerLine, { backgroundColor: theme.custom.glassLight }]}
+            />
+            <BaseText
+              variant="body"
+              color="rgba(255, 255, 255, 0.6)"
+              style={styles.dividerText}
+              children="OR"
+            />
+            <View
+              style={[styles.dividerLine, { backgroundColor: theme.custom.glassLight }]}
+            />
+          </View>
+
+          <GoogleButton onPress={handleGoogleSignup} />
+
           <BaseText
-            variant="body"
-            color="rgba(255, 255, 255, 0.6)"
-            style={styles.dividerText}
-            children="OR"
-          />
-          <View
-            style={[styles.dividerLine, { backgroundColor: theme.custom.glassLight }]}
+            variant="caption"
+            color="rgba(255, 255, 255, 0.55)"
+            style={styles.privacyText}
+            children="By tapping Continue, you agree to our Terms of Service and Privacy Policy"
           />
         </View>
-
-        <GoogleButton onPress={handleGoogleSignup} />
-
-        <BaseText
-          variant="caption"
-          color="rgba(255, 255, 255, 0.55)"
-          style={styles.privacyText}
-          children="By tapping Continue, you agree to our Terms of Service and Privacy Policy"
-        />
 
         <View style={styles.footer}>
           <BaseText

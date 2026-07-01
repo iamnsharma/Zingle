@@ -7,13 +7,14 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useThemeStore } from '@stores';
 import { useOnboardingStore } from '@stores/onboardingStore';
 import { metrics } from '@styling/metrics';
 import { StepperProgress, BaseText, SafeAreaContainer, GradientButton } from '@components/atoms';
 import { OnboardingStepTransition } from '@components/molecules';
-import { TOTAL_ONBOARDING_STEPS, ONBOARDING_STEPS, MIN_INTERESTS } from '@constants/onboarding';
+import { TOTAL_ONBOARDING_STEPS, MIN_INTERESTS } from '@constants/onboarding';
 import {
   OnboardingStep1,
   OnboardingStep2,
@@ -30,34 +31,59 @@ interface OnboardingContainerProps {
 }
 
 const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: metrics.spacing.lg,
-    paddingTop: metrics.spacing.sm,
-    paddingBottom: metrics.spacing.xs,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  headerText: {
+  root: {
     flex: 1,
-    gap: metrics.spacing.xs,
-    paddingRight: metrics.spacing.md,
+  },
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    paddingHorizontal: metrics.spacing.lg,
+    paddingTop: metrics.spacing.xs,
+    paddingBottom: metrics.spacing.sm,
   },
   skipButton: {
-    padding: metrics.spacing.xs,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: metrics.spacing.xs,
+    paddingVertical: metrics.spacing.xs,
+    paddingHorizontal: metrics.spacing.sm,
+    borderRadius: metrics.radius.full,
   },
   skipBold: {
     fontWeight: '600',
   },
+  sheet: {
+    flex: 1,
+    borderTopLeftRadius: metrics.radius['2xl'],
+    borderTopRightRadius: metrics.radius['2xl'],
+    marginTop: metrics.spacing.sm,
+    overflow: 'hidden',
+    ...metrics.shadows.lg,
+  },
+  sheetHandleArea: {
+    alignItems: 'center',
+    paddingTop: metrics.spacing.md,
+    paddingBottom: metrics.spacing.xs,
+  },
+  sheetHandle: {
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+  },
+  keyboardAvoid: {
+    flex: 1,
+  },
   content: {
     flexGrow: 1,
     paddingHorizontal: metrics.spacing.lg,
-    paddingBottom: metrics.spacing.lg,
+    paddingTop: metrics.spacing.sm,
+    paddingBottom: metrics.spacing['2xl'],
   },
   footer: {
     paddingHorizontal: metrics.spacing.lg,
-    paddingVertical: metrics.spacing.lg,
-    gap: metrics.spacing.md,
+    paddingTop: metrics.spacing.md,
+    gap: metrics.spacing.sm,
     borderTopWidth: 1,
   },
   backRow: {
@@ -65,10 +91,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: metrics.spacing.xs,
-    paddingVertical: metrics.spacing.xs,
-  },
-  keyboardAvoid: {
-    flex: 1,
+    paddingVertical: metrics.spacing.sm,
   },
 });
 
@@ -91,7 +114,6 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
     useOnboardingStore();
 
   const CurrentStep = STEPS[currentStep - 1];
-  const stepMeta = ONBOARDING_STEPS[currentStep - 1];
   const isFirstStep = currentStep === 1;
   const isLastStep = currentStep === TOTAL_ONBOARDING_STEPS;
 
@@ -100,7 +122,7 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
       case 1:
         return Boolean(data.name?.trim() && data.age && data.age >= 18);
       case 2:
-        return Boolean(data.height && data.gender);
+        return Boolean(data.gender);
       case 3:
         return Boolean(data.bio?.trim() && (data.bio?.length || 0) >= 20);
       case 4:
@@ -137,26 +159,22 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
   }, [currentStep, setCurrentStep]);
 
   return (
-    <SafeAreaContainer>
-      <View style={styles.header}>
-        <View style={styles.headerText}>
-          <BaseText
-            variant="h2"
-            color={theme.custom.text}
-            children={stepMeta?.title}
-          />
+    <SafeAreaContainer style={[styles.root, { backgroundColor: theme.custom.surfaceVariant }]}>
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          style={[styles.skipButton, { backgroundColor: theme.colors.surface }]}
+          onPress={onSkip}
+        >
           <BaseText
             variant="body"
             color={theme.custom.textSecondary}
-            children={stepMeta?.subtitle}
-          />
-        </View>
-        <TouchableOpacity style={styles.skipButton} onPress={onSkip}>
-          <BaseText
-            variant="body"
-            color={theme.custom.textTertiary}
             style={styles.skipBold}
             children="Skip"
+          />
+          <MaterialCommunityIcons
+            name="chevron-right"
+            size={18}
+            color={theme.custom.textTertiary}
           />
         </TouchableOpacity>
       </View>
@@ -167,24 +185,43 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
         showLabel
       />
 
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoid}
-      >
-        <ScrollView
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          <OnboardingStepTransition stepKey={currentStep}>
-            {CurrentStep && <CurrentStep />}
-          </OnboardingStepTransition>
-        </ScrollView>
-      </KeyboardAvoidingView>
+      <View style={[styles.sheet, { backgroundColor: theme.colors.surface }]}>
+        <View style={styles.sheetHandleArea}>
+          <View
+            style={[styles.sheetHandle, { backgroundColor: theme.custom.border }]}
+          />
+        </View>
 
-      <View style={[styles.footer, { borderTopColor: theme.custom.border }]}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.keyboardAvoid}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 8 : 0}
+        >
+          <ScrollView
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            bounces={false}
+          >
+            <OnboardingStepTransition stepKey={currentStep}>
+              {CurrentStep && <CurrentStep />}
+            </OnboardingStepTransition>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
+
+      <SafeAreaView
+        edges={['bottom']}
+        style={[
+          styles.footer,
+          {
+            backgroundColor: theme.colors.surface,
+            borderTopColor: theme.custom.border,
+          },
+        ]}
+      >
         <GradientButton
-          label={isLastStep ? 'Start swiping 🎉' : 'Continue'}
+          label={isLastStep ? 'Start swiping' : 'Continue'}
           size="lg"
           onPress={handleNext}
           disabled={!canProceed()}
@@ -204,7 +241,7 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
             />
           </TouchableOpacity>
         )}
-      </View>
+      </SafeAreaView>
     </SafeAreaContainer>
   );
 };

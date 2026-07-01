@@ -123,11 +123,11 @@ export const LOOKING_FOR = [
 export const TOTAL_ONBOARDING_STEPS = 7;
 
 export const ONBOARDING_STEPS = [
-  { step: 1, title: 'Basic Info', subtitle: 'Name & Age' },
-  { step: 2, title: 'About You', subtitle: 'Height & Gender' },
-  { step: 3, title: 'Tell Us More', subtitle: 'Your bio' },
-  { step: 4, title: 'Interests', subtitle: 'What you love' },
-  { step: 5, title: 'Photos', subtitle: 'Show your best side' },
-  { step: 6, title: 'Location', subtitle: 'Where you are' },
-  { step: 7, title: 'Review', subtitle: 'Confirm your profile' },
+  { step: 1, title: 'Basic Info', subtitle: 'Name & Age', icon: 'account-heart-outline' },
+  { step: 2, title: 'About You', subtitle: 'Height & Gender', icon: 'human-male-height-variant' },
+  { step: 3, title: 'Tell Us More', subtitle: 'Your bio', icon: 'text-box-outline' },
+  { step: 4, title: 'Interests', subtitle: 'What you love', icon: 'heart-multiple-outline' },
+  { step: 5, title: 'Photos', subtitle: 'Show your best side', icon: 'image-multiple-outline' },
+  { step: 6, title: 'Location', subtitle: 'Where you are', icon: 'map-marker-outline' },
+  { step: 7, title: 'Review', subtitle: 'Confirm your profile', icon: 'check-decagram-outline' },
 ] as const;

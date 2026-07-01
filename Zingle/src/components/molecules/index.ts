@@ -1,3 +1,7 @@
+export { BottomSheet } from './BottomSheet';
+export { HeightSelectorSheet } from './HeightSelectorSheet';
+export { AgeSelectorSheet } from './AgeSelectorSheet';
+export { CitySelectorSheet } from './CitySelectorSheet';
 export { AnimatedSwipeCard } from './AnimatedSwipeCard';
 export { AnimatedInterestChip } from './AnimatedInterestChip';
 export { AuthBackground } from './AuthBackground';
