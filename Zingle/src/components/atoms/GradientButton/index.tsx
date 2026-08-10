@@ -7,8 +7,9 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import { useThemeStore } from '@stores';
+import { useThemeStore, useProfileStore } from '@stores';
 import { metrics } from '@styling/metrics';
+import { hexToRgba } from '@utils/colorUtils';
 import { BaseText } from '../BaseText';
 
 interface GradientButtonProps extends TouchableOpacityProps {
@@ -20,12 +21,20 @@ interface GradientButtonProps extends TouchableOpacityProps {
   colors?: string[];
 }
 
+const GLASS_SHEEN = ['rgba(255,255,255,0.55)', 'rgba(255,255,255,0.10)', 'rgba(255,255,255,0.02)'];
+
 const styles = StyleSheet.create({
   button: {
     borderRadius: metrics.radius.full,
     justifyContent: 'center',
     alignItems: 'center',
     overflow: 'hidden',
+  },
+  glassButton: {
+    borderWidth: 1,
+  },
+  sheen: {
+    ...StyleSheet.absoluteFillObject,
   },
   content: {
     justifyContent: 'center',
@@ -61,6 +70,7 @@ export const GradientButton = React.forwardRef<View, GradientButtonProps>(
     ref
   ) => {
     const { theme } = useThemeStore();
+    const glassEnabled = useProfileStore(state => state.appSettings.liquidGlass);
 
     const getGradientColors = (): string[] => {
       if (customColors) return customColors;
@@ -72,6 +82,48 @@ export const GradientButton = React.forwardRef<View, GradientButtonProps>(
 
     const sizeStyle = styles[size];
     const gradientColors = getGradientColors();
+
+    // Liquid glass: frosted translucent pill tinted with the button accent.
+    if (glassEnabled && !disabled) {
+      const accent = customColors?.[0] ?? theme.colors.primary;
+      return (
+        <TouchableOpacity
+          ref={ref}
+          {...props}
+          disabled={loading}
+          activeOpacity={0.8}
+        >
+          <View
+            style={[
+              styles.button,
+              styles.glassButton,
+              sizeStyle,
+              {
+                backgroundColor: hexToRgba(accent, 0.16),
+                borderColor: hexToRgba(accent, 0.5),
+              },
+              customStyle,
+            ]}
+          >
+            <LinearGradient
+              colors={GLASS_SHEEN}
+              locations={[0, 0.55, 1]}
+              start={{ x: 0.1, y: 0 }}
+              end={{ x: 0.9, y: 1 }}
+              style={styles.sheen}
+              pointerEvents="none"
+            />
+            <View style={styles.content}>
+              {loading ? (
+                <ActivityIndicator color={accent} />
+              ) : (
+                <BaseText variant="button" color={accent} children={label} />
+              )}
+            </View>
+          </View>
+        </TouchableOpacity>
+      );
+    }
 
     return (
       <TouchableOpacity

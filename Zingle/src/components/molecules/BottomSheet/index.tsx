@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Animated,
   PanResponder,
-  Pressable,
   ScrollView,
   useWindowDimensions,
 } from 'react-native';
@@ -13,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeStore } from '@stores';
 import { metrics } from '@styling/metrics';
 import { BaseText } from '@components/atoms';
+import { SheetBlurBackdrop, SheetDismissLayer } from '../SheetBlurBackdrop';
 
 const DISMISS_THRESHOLD = 120;
 
@@ -31,10 +31,6 @@ const styles = StyleSheet.create({
   modalRoot: {
     flex: 1,
     justifyContent: 'flex-end',
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
   },
   sheet: {
     borderTopLeftRadius: metrics.radius['2xl'],
@@ -180,49 +176,50 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   );
 
   return (
-    <Modal transparent visible={visible} animationType="none" statusBarTranslucent>
-      <View style={styles.modalRoot}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={() => closeSheet()}>
+    <>
+      {visible ? (
+        <SheetBlurBackdrop opacity={backdropOpacity} placement="underlay" />
+      ) : null}
+      <Modal transparent visible={visible} animationType="none" statusBarTranslucent>
+        <View style={styles.modalRoot} pointerEvents="box-none">
+          <SheetDismissLayer onPress={() => closeSheet()} />
+
           <Animated.View
-            style={[styles.backdrop, { opacity: backdropOpacity }]}
-          />
-        </Pressable>
-
-        <Animated.View
-          style={[
-            styles.sheet,
-            styles.sheetColumn,
-            {
-              maxHeight: maxSheetHeight,
-              paddingBottom: insets.bottom + metrics.spacing.sm,
-              backgroundColor: theme.colors.surface,
-              transform: [{ translateY }],
-            },
-          ]}
-        >
-          <View {...panResponder.panHandlers} style={styles.handleArea}>
-            <View
-              style={[styles.handle, { backgroundColor: theme.custom.border }]}
-            />
-          </View>
-
-          <View style={styles.header}>
-            <BaseText variant="h2" color={theme.custom.text} children={title} />
-            {subtitle ? (
-              <BaseText
-                variant="body"
-                color={theme.custom.textSecondary}
-                children={subtitle}
+            style={[
+              styles.sheet,
+              styles.sheetColumn,
+              {
+                maxHeight: maxSheetHeight,
+                paddingBottom: insets.bottom + metrics.spacing.sm,
+                backgroundColor: theme.colors.surface,
+                transform: [{ translateY }],
+              },
+            ]}
+          >
+            <View {...panResponder.panHandlers} style={styles.handleArea}>
+              <View
+                style={[styles.handle, { backgroundColor: theme.custom.border }]}
               />
-            ) : null}
-          </View>
+            </View>
 
-          {bodyContent}
+            <View style={styles.header}>
+              <BaseText variant="h2" color={theme.custom.text} children={title} />
+              {subtitle ? (
+                <BaseText
+                  variant="body"
+                  color={theme.custom.textSecondary}
+                  children={subtitle}
+                />
+              ) : null}
+            </View>
 
-          {footer ? <View style={styles.footer}>{footer}</View> : null}
-        </Animated.View>
-      </View>
-    </Modal>
+            {bodyContent}
+
+            {footer ? <View style={styles.footer}>{footer}</View> : null}
+          </Animated.View>
+        </View>
+      </Modal>
+    </>
   );
 };
 

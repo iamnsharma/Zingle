@@ -76,6 +76,7 @@ export const MatchAvatar = React.forwardRef<View, MatchAvatarProps>(
   ) => {
     const { theme } = useThemeStore();
     const sizePixels = sizeMap[size];
+    const badgeCount = unreadCount ?? 0;
 
     const imageStyle: ImageStyle = {
       width: sizePixels,
@@ -122,7 +123,7 @@ export const MatchAvatar = React.forwardRef<View, MatchAvatarProps>(
             </View>
           )}
 
-          {unreadCount && unreadCount > 0 && (
+          {badgeCount > 0 ? (
             <View
               style={[
                 styles.unreadBadge,
@@ -135,10 +136,10 @@ export const MatchAvatar = React.forwardRef<View, MatchAvatarProps>(
               <BaseText
                 variant="caption"
                 color="#FFFFFF"
-                children={unreadCount > 99 ? '99+' : unreadCount.toString()}
+                children={badgeCount > 99 ? '99+' : String(badgeCount)}
               />
             </View>
-          )}
+          ) : null}
         </View>
 
         <BaseText

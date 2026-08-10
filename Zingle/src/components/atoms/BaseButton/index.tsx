@@ -7,8 +7,10 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import { useThemeStore } from '@stores';
+import LinearGradient from 'react-native-linear-gradient';
+import { useThemeStore, useProfileStore } from '@stores';
 import { metrics } from '@styling/metrics';
+import { hexToRgba } from '@utils/colorUtils';
 import { BaseText } from '../BaseText';
 
 interface BaseButtonProps extends TouchableOpacityProps {
@@ -19,12 +21,18 @@ interface BaseButtonProps extends TouchableOpacityProps {
   disabled?: boolean;
 }
 
+const GLASS_SHEEN = ['rgba(255,255,255,0.5)', 'rgba(255,255,255,0.08)', 'rgba(255,255,255,0.02)'];
+
 const styles = StyleSheet.create({
   button: {
     paddingHorizontal: metrics.spacing.lg,
     borderRadius: metrics.radius.md,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
+  },
+  sheen: {
+    ...StyleSheet.absoluteFillObject,
   },
   sm: {
     paddingVertical: metrics.spacing.sm,
@@ -51,6 +59,7 @@ export const BaseButton = React.forwardRef<View, BaseButtonProps>(
     ref
   ) => {
     const { theme } = useThemeStore();
+    const glassEnabled = useProfileStore(state => state.appSettings.liquidGlass);
 
     const getBackgroundColor = (): string => {
       if (disabled) return theme.custom.disabled;
@@ -83,6 +92,44 @@ export const BaseButton = React.forwardRef<View, BaseButtonProps>(
     };
 
     const sizeStyle = styles[size];
+
+    // Liquid glass: frosted translucent surface tinted with the accent color.
+    if (glassEnabled && !disabled && variant !== 'outline') {
+      const accent =
+        variant === 'secondary' ? theme.colors.secondary : theme.colors.primary;
+      return (
+        <TouchableOpacity
+          ref={ref}
+          {...props}
+          disabled={loading}
+          style={[
+            styles.button,
+            sizeStyle,
+            {
+              backgroundColor: hexToRgba(accent, 0.16),
+              borderWidth: 1,
+              borderColor: hexToRgba(accent, 0.5),
+            },
+            customStyle,
+          ]}
+        >
+          <LinearGradient
+            colors={GLASS_SHEEN}
+            locations={[0, 0.55, 1]}
+            start={{ x: 0.1, y: 0 }}
+            end={{ x: 0.9, y: 1 }}
+            style={styles.sheen}
+            pointerEvents="none"
+          />
+          {loading ? (
+            <ActivityIndicator color={accent} />
+          ) : (
+            <BaseText variant="button" color={accent} children={label} />
+          )}
+        </TouchableOpacity>
+      );
+    }
+
     const buttonStyle: ViewStyle = {
       ...styles.button,
       ...sizeStyle,

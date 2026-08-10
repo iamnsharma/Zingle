@@ -26,6 +26,26 @@ export type Religion =
   | 'other'
   | 'prefer-not-to-say';
 
+export interface PrivacySettings {
+  showOnApp: boolean;
+  showAge: boolean;
+  showDistance: boolean;
+  matchesOnlyMessages: boolean;
+  hideFromContacts: boolean;
+  readReceipts: boolean;
+  incognitoMode: boolean;
+}
+
+export interface AppSettings {
+  pushNotifications: boolean;
+  matchAlerts: boolean;
+  messageAlerts: boolean;
+  likeAlerts: boolean;
+  emailUpdates: boolean;
+  soundEffects: boolean;
+  liquidGlass: boolean;
+}
+
 export interface UserProfile {
   id: string;
   name: string;

@@ -1,0 +1,9 @@
+{
+  "extends": "./Zingle/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-native",
+    "typeRoots": ["./Zingle/node_modules/@types"]
+  },
+  "include": ["Zingle/**/*.ts", "Zingle/**/*.tsx"],
+  "exclude": ["**/node_modules", "**/Pods"]
+}

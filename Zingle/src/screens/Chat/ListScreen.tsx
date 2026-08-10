@@ -1,19 +1,25 @@
-import React from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import {
   StyleSheet,
   View,
   FlatList,
   TouchableOpacity,
+  TextInput,
+  Keyboard,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
+import type { ChatStackNavigationProp } from '@types';
 import { useThemeStore } from '@stores';
 import { metrics } from '@styling/metrics';
 import { BaseText, ProfileAvatar, SafeAreaContainer } from '@components/atoms';
-import { MOCK_CONVERSATIONS } from '@services/mock/data';
-
-interface ChatListScreenProps {
-  onConversationPress?: (conversationId: string) => void;
-}
+import {
+  MOCK_CONVERSATIONS,
+  getOtherUserId,
+  getProfileById,
+  formatMessageTime,
+} from '@services/mock/data';
+import type { Conversation } from '@types';
 
 const styles = StyleSheet.create({
   container: {
@@ -21,142 +27,282 @@ const styles = StyleSheet.create({
   },
   header: {
     paddingHorizontal: metrics.spacing.lg,
-    paddingVertical: metrics.spacing.md,
+    paddingTop: metrics.spacing.md,
+    paddingBottom: metrics.spacing.sm,
   },
   title: {
-    marginBottom: metrics.spacing.xs,
+    fontSize: 30,
+    fontWeight: '800',
+    marginBottom: metrics.spacing.md,
   },
-  conversationItem: {
+  searchWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: metrics.spacing.md,
+    borderRadius: metrics.radius.full,
+    gap: metrics.spacing.sm,
+    height: 44,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    padding: 0,
+  },
+  list: {
+    flex: 1,
+  },
+  listContent: {
+    paddingBottom: metrics.spacing.xl,
+  },
+  row: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: metrics.spacing.lg,
     paddingVertical: metrics.spacing.md,
-    borderBottomWidth: 1,
     gap: metrics.spacing.md,
   },
-  conversationContent: {
+  content: {
     flex: 1,
   },
-  conversationHeader: {
+  topLine: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: metrics.spacing.xs,
+    marginBottom: 3,
   },
-  conversationName: {
+  name: {
     flex: 1,
+    fontSize: 16,
   },
-  lastMessage: {
-    marginBottom: metrics.spacing.xs,
+  time: {
+    fontSize: 12,
+    marginLeft: metrics.spacing.sm,
   },
-  emptyContainer: {
+  bottomLine: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: metrics.spacing.xs,
+  },
+  preview: {
     flex: 1,
+    fontSize: 14,
+  },
+  badge: {
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    paddingHorizontal: 6,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  unreadBadge: {
-    backgroundColor: 'themed',
-    borderRadius: metrics.radius.full,
-    width: 24,
-    height: 24,
-    justifyContent: 'center' as const,
-    alignItems: 'center' as const,
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '700',
+    lineHeight: 16,
+  },
+  rowDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: metrics.spacing.lg + 56 + metrics.spacing.md,
+  },
+  empty: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: metrics.spacing.md,
+    paddingHorizontal: metrics.spacing.xl,
+    paddingTop: metrics.spacing['4xl'],
   },
 });
 
-export const ChatListScreen: React.FC<ChatListScreenProps> = ({
-  onConversationPress,
-}) => {
+export const ChatListScreen: React.FC = () => {
   const { theme } = useThemeStore();
+  const navigation = useNavigation<ChatStackNavigationProp>();
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const renderItem = ({ item }: any) => (
-    <TouchableOpacity
-      style={[
-        styles.conversationItem,
-        { borderBottomColor: theme.custom.border },
-      ]}
-      onPress={() => onConversationPress?.(item.id)}
-    >
-      <ProfileAvatar
-        initials={item.userId2.charAt(0).toUpperCase()}
-        size="md"
-        online={Math.random() > 0.5}
-      />
-      <View style={styles.conversationContent}>
-        <View style={styles.conversationHeader}>
-          <BaseText
-            variant="body"
-            color={theme.custom.text}
-            style={styles.conversationName}
-            children={`User ${item.userId2}`}
-          />
-          <BaseText
-            variant="caption"
-            color={theme.custom.textTertiary}
-            children="Now"
-          />
-        </View>
-        <BaseText
-          variant="body"
-          color={theme.custom.textSecondary}
-          style={styles.lastMessage}
-          numberOfLines={1}
-          children="Last message preview..."
-        />
-      </View>
-      {item.unreadCount > 0 && (
-        <View
-          style={[
-            styles.unreadBadge,
-            {
-              backgroundColor: theme.colors.primary,
-            },
-          ]}
-        >
-          <BaseText
-            variant="caption"
-            color="#FFFFFF"
-            children={item.unreadCount.toString()}
-          />
-        </View>
-      )}
-    </TouchableOpacity>
+  const openConversation = useCallback(
+    (conversationId: string) => {
+      Keyboard.dismiss();
+      navigation.navigate('ChatThread', { conversationId });
+    },
+    [navigation],
   );
 
-  if (MOCK_CONVERSATIONS.length === 0) {
-    return (
-      <SafeAreaContainer>
-        <View style={styles.emptyContainer}>
-          <MaterialCommunityIcons
-            name="message-text-outline"
-            size={64}
-            color={theme.custom.textTertiary}
-          />
-          <BaseText
-            variant="h2"
-            color={theme.custom.text}
-            children="No conversations yet"
-          />
-        </View>
-      </SafeAreaContainer>
+  const conversations = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    const list = MOCK_CONVERSATIONS.filter(conv => {
+      if (q.length === 0) return true;
+      const profile = getProfileById(getOtherUserId(conv));
+      const name = profile?.name ?? '';
+      const preview = conv.lastMessage?.text ?? '';
+      return (
+        name.toLowerCase().includes(q) || preview.toLowerCase().includes(q)
+      );
+    });
+
+    return list.sort(
+      (a, b) =>
+        new Date(b.lastMessageAt ?? b.createdAt).getTime() -
+        new Date(a.lastMessageAt ?? a.createdAt).getTime(),
     );
-  }
+  }, [searchQuery]);
+
+  const renderRow = useCallback(
+    ({ item }: { item: Conversation }) => {
+      const otherUserId = getOtherUserId(item);
+      const profile = getProfileById(otherUserId);
+      const name = profile?.name ?? `User ${otherUserId}`;
+      const preview = item.lastMessage?.text ?? 'Start the conversation';
+      const time = formatMessageTime(item.lastMessageAt);
+      const hasUnread = item.unreadCount > 0;
+      const isFromMe = item.lastMessage?.senderId === 'me';
+
+      return (
+        <>
+          <TouchableOpacity
+            style={styles.row}
+            onPress={() => openConversation(item.id)}
+            activeOpacity={0.7}
+          >
+            <ProfileAvatar
+              uri={profile?.photos[0]}
+              initials={name.charAt(0)}
+              size="md"
+              online={profile?.online}
+            />
+            <View style={styles.content}>
+              <View style={styles.topLine}>
+                <BaseText
+                  color={theme.custom.text}
+                  numberOfLines={1}
+                  style={[styles.name, { fontWeight: hasUnread ? '700' : '600' }]}
+                  children={name}
+                />
+                <BaseText
+                  color={hasUnread ? theme.colors.primary : theme.custom.textTertiary}
+                  style={styles.time}
+                  children={time}
+                />
+              </View>
+              <View style={styles.bottomLine}>
+                {isFromMe ? (
+                  <MaterialCommunityIcons
+                    name={item.lastMessage?.readAt ? 'check-all' : 'check'}
+                    size={15}
+                    color={
+                      item.lastMessage?.readAt
+                        ? theme.colors.primary
+                        : theme.custom.textTertiary
+                    }
+                  />
+                ) : null}
+                <BaseText
+                  color={hasUnread ? theme.custom.text : theme.custom.textSecondary}
+                  numberOfLines={1}
+                  style={[styles.preview, { fontWeight: hasUnread ? '600' : '400' }]}
+                  children={preview}
+                />
+                {hasUnread ? (
+                  <View
+                    style={[styles.badge, { backgroundColor: theme.colors.primary }]}
+                  >
+                    <BaseText
+                      color="#FFFFFF"
+                      style={styles.badgeText}
+                      children={item.unreadCount > 99 ? '99+' : String(item.unreadCount)}
+                    />
+                  </View>
+                ) : null}
+              </View>
+            </View>
+          </TouchableOpacity>
+          <View style={[styles.rowDivider, { backgroundColor: theme.custom.border }]} />
+        </>
+      );
+    },
+    [openConversation, theme],
+  );
 
   return (
-    <SafeAreaContainer>
+    <SafeAreaContainer style={styles.container}>
       <View style={styles.header}>
         <BaseText
-          variant="h1"
           color={theme.custom.text}
           style={styles.title}
           children="Messages"
         />
+        <View
+          style={[
+            styles.searchWrap,
+            { backgroundColor: theme.custom.surfaceVariant },
+          ]}
+        >
+          <MaterialCommunityIcons
+            name="magnify"
+            size={20}
+            color={theme.custom.textTertiary}
+          />
+          <TextInput
+            style={[styles.searchInput, { color: theme.custom.text }]}
+            placeholder="Search"
+            placeholderTextColor={theme.custom.textTertiary}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            returnKeyType="search"
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
+          {searchQuery.length > 0 ? (
+            <TouchableOpacity
+              onPress={() => setSearchQuery('')}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <MaterialCommunityIcons
+                name="close-circle"
+                size={18}
+                color={theme.custom.textTertiary}
+              />
+            </TouchableOpacity>
+          ) : null}
+        </View>
       </View>
+
       <FlatList
-        data={MOCK_CONVERSATIONS}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        scrollEnabled={true}
+        style={styles.list}
+        data={conversations}
+        renderItem={renderRow}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.listContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        ListEmptyComponent={
+          <View style={styles.empty}>
+            <MaterialCommunityIcons
+              name={
+                searchQuery.length > 0
+                  ? 'account-search-outline'
+                  : 'message-text-outline'
+              }
+              size={56}
+              color={theme.custom.textTertiary}
+            />
+            <BaseText
+              color={theme.custom.text}
+              style={{ fontSize: 17, fontWeight: '700' }}
+              children={
+                searchQuery.length > 0 ? 'No results found' : 'No conversations yet'
+              }
+            />
+            <BaseText
+              color={theme.custom.textSecondary}
+              style={{ fontSize: 14, textAlign: 'center' }}
+              children={
+                searchQuery.length > 0
+                  ? 'Try a different name or message'
+                  : 'Match with someone and start chatting'
+              }
+            />
+          </View>
+        }
       />
     </SafeAreaContainer>
   );

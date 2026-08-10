@@ -4,6 +4,7 @@ import { MainAppStackParamList } from '@types';
 import { useOnboardingStore } from '@stores/onboardingStore';
 import { BottomTabNavigator } from '../BottomTabNavigator';
 import { OnboardingContainer } from '@screens/Onboarding';
+import { EditProfileScreen } from '@screens/Profile/EditProfileScreen';
 
 const Stack = createNativeStackNavigator<MainAppStackParamList>();
 
@@ -16,6 +17,11 @@ export const MainAppStack = () => {
       initialRouteName={isCompleted ? 'MainBottomTab' : 'Onboarding'}
     >
       <Stack.Screen name="MainBottomTab" component={BottomTabNavigator} />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfileScreen}
+        options={{ headerShown: false, presentation: 'modal' }}
+      />
       <Stack.Screen name="Onboarding">
         {({ navigation }) => (
           <OnboardingContainer

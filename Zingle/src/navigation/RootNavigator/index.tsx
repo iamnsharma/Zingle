@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { ActivityIndicator, View, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAuthStore } from '@stores';
-import { AuthStatus } from '@types';
 import { AuthStack } from '../AuthStack';
 import { MainAppStack } from '../MainAppStack';
 
@@ -18,38 +17,12 @@ const styles = StyleSheet.create({
 });
 
 export const RootNavigator = () => {
-  const { isAuthenticated, authStatus, setAuthStatus } = useAuthStore();
+  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const hasHydrated = useAuthStore(state => state.hasHydrated);
 
-  // Initialize auth status on app startup
-  useEffect(() => {
-    const initializeAuth = async () => {
-      try {
-        // TODO: Replace with actual auth check from AsyncStorage or Supabase
-        // For now, default to unauthenticated (user sees login)
-
-        // Example:
-        // const token = await AsyncStorage.getItem('authToken');
-        // if (token) {
-        //   setAuthStatus(AuthStatus.AUTHENTICATED);
-        // } else {
-        //   setAuthStatus(AuthStatus.UNAUTHENTICATED);
-        // }
-
-        // Default: Set to unauthenticated to show login screen
-        setAuthStatus(AuthStatus.UNAUTHENTICATED);
-      } catch (error) {
-        console.error('Auth initialization error:', error);
-        setAuthStatus(AuthStatus.UNAUTHENTICATED);
-      }
-    };
-
-    if (authStatus === AuthStatus.IDLE) {
-      initializeAuth();
-    }
-  }, [authStatus, setAuthStatus]);
-
-  // Show loading while checking auth
-  if (authStatus === AuthStatus.IDLE) {
+  // Wait until the persisted session has been restored so we don't flash the
+  // auth stack for an already-logged-in user.
+  if (!hasHydrated) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" />
@@ -59,9 +32,7 @@ export const RootNavigator = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{ headerShown: false }}
-      >
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
         {isAuthenticated ? (
           <Stack.Screen name="MainAppStack" component={MainAppStack} />
         ) : (

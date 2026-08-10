@@ -11,6 +11,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useThemeStore } from '@stores';
 import { useOnboardingStore } from '@stores/onboardingStore';
+import { useProfileStore } from '@stores/profileStore';
+import { buildProfileFromOnboarding } from '@utils/profileUtils';
 import { metrics } from '@styling/metrics';
 import { StepperProgress, BaseText, SafeAreaContainer, GradientButton } from '@components/atoms';
 import { OnboardingStepTransition } from '@components/molecules';
@@ -112,6 +114,7 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
   const { theme } = useThemeStore();
   const { currentStep, setCurrentStep, completeOnboarding, data } =
     useOnboardingStore();
+  const { setCurrentUser, currentUser } = useProfileStore();
 
   const CurrentStep = STEPS[currentStep - 1];
   const isFirstStep = currentStep === 1;
@@ -141,6 +144,8 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
     if (currentStep < TOTAL_ONBOARDING_STEPS) {
       setCurrentStep(currentStep + 1);
     } else {
+      const profile = buildProfileFromOnboarding(data, currentUser);
+      setCurrentUser(profile);
       completeOnboarding();
       onComplete?.();
     }
@@ -150,6 +155,9 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
     setCurrentStep,
     completeOnboarding,
     onComplete,
+    data,
+    currentUser,
+    setCurrentUser,
   ]);
 
   const handlePrevious = useCallback(() => {

@@ -7,15 +7,16 @@ import {
   Animated,
   PanResponder,
   ScrollView,
-  Pressable,
   useWindowDimensions,
-  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeStore } from '@stores';
 import { useFilterStore, defaultFilters } from '@stores/filterStore';
 import { metrics } from '@styling/metrics';
-import { BaseText, FilterChip, GradientButton } from '@components/atoms';
+import { BaseText, GradientButton } from '@components/atoms';
+import { FilterSingleSlider, FilterRangeSlider } from '../FilterSliders';
+import { SheetToggleRow } from '../SheetToggleRow';
+import { SheetBlurBackdrop, SheetDismissLayer } from '../SheetBlurBackdrop';
 
 interface FilterBottomSheetProps {
   visible: boolean;
@@ -23,6 +24,16 @@ interface FilterBottomSheetProps {
 }
 
 const DISMISS_THRESHOLD = 120;
+const DISTANCE_MIN = 1;
+const DISTANCE_MAX = 100;
+const AGE_MIN = 18;
+const AGE_MAX = 100;
+
+const formatDistance = (km: number) =>
+  km >= DISTANCE_MAX ? '100+ km' : `${km} km`;
+
+const formatAgeRange = (min: number, max: number) =>
+  max >= AGE_MAX ? `${min} – ${AGE_MAX}+` : `${min} – ${max}`;
 
 export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
   visible,
@@ -86,7 +97,7 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
         if (dy > 0) {
           translateY.setValue(dy);
           backdropOpacity.setValue(
-            Math.max(0, 1 - dy / (sheetHeight * 0.6))
+            Math.max(0, 1 - dy / (sheetHeight * 0.6)),
           );
         }
       },
@@ -108,7 +119,7 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
           ]).start();
         }
       },
-    })
+    }),
   ).current;
 
   const handleApply = () => {
@@ -122,30 +133,18 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
     closeSheet();
   };
 
-  const toggleBool = (key: keyof typeof draft) => {
-    setDraft(prev => ({ ...prev, [key]: !prev[key] }));
+  const toggleBool = (key: keyof typeof draft, value: boolean) => {
+    setDraft(prev => ({ ...prev, [key]: value }));
   };
-
-  const setAgeMin = (val: number) =>
-    setDraft(prev => ({ ...prev, ageMin: Math.min(val, (prev.ageMax || 65) - 1) }));
-  const setAgeMax = (val: number) =>
-    setDraft(prev => ({ ...prev, ageMax: Math.max(val, (prev.ageMin || 18) + 1) }));
-  const setDistanceMax = (val: number) =>
-    setDraft(prev => ({ ...prev, distanceMax: val }));
 
   if (!visible) return null;
 
   return (
-    <Modal transparent visible={visible} animationType="none" statusBarTranslucent>
-      <View style={styles.modalRoot}>
-        <Pressable style={StyleSheet.absoluteFill} onPress={() => closeSheet()}>
-          <Animated.View
-            style={[
-              styles.backdrop,
-              { opacity: backdropOpacity },
-            ]}
-          />
-        </Pressable>
+    <>
+      <SheetBlurBackdrop opacity={backdropOpacity} placement="underlay" />
+      <Modal transparent visible={visible} animationType="none" statusBarTranslucent>
+        <View style={styles.modalRoot} pointerEvents="box-none">
+          <SheetDismissLayer onPress={() => closeSheet()} />
 
         <Animated.View
           style={[
@@ -165,13 +164,13 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
           </View>
 
           <View style={styles.sheetHeader}>
-            <BaseText variant="h2" color={theme.custom.text} children="Filters" />
+            <BaseText variant="h2" color={theme.custom.text} children="Discovery Settings" />
             <TouchableOpacity onPress={handleClear} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <BaseText
                 variant="body"
                 color={theme.colors.primary}
                 style={styles.clearTextBold}
-                children="Clear all"
+                children="Reset"
               />
             </TouchableOpacity>
           </View>
@@ -181,86 +180,84 @@ export const FilterBottomSheet: React.FC<FilterBottomSheetProps> = ({
             contentContainerStyle={styles.scrollContent}
             bounces={false}
           >
-            <BaseText
-              variant="body"
-              color={theme.custom.textSecondary}
-              style={styles.sectionLabel}
-              children="Maximum distance"
+            <FilterSingleSlider
+              label="Maximum distance"
+              value={draft.distanceMax ?? DISTANCE_MAX}
+              min={DISTANCE_MIN}
+              max={DISTANCE_MAX}
+              step={1}
+              formatValue={formatDistance}
+              onChange={distanceMax => setDraft(prev => ({ ...prev, distanceMax }))}
             />
-            <View style={styles.chipRow}>
-              {[5, 10, 25, 50, 100].map(km => (
-                <FilterChip
-                  key={km}
-                  label={`${km} km`}
-                  selected={draft.distanceMax === km}
-                  onPress={() => setDistanceMax(km)}
-                />
-              ))}
-            </View>
+
+            <FilterRangeSlider
+              label="Age range"
+              minValue={draft.ageMin ?? AGE_MIN}
+              maxValue={draft.ageMax ?? AGE_MAX}
+              min={AGE_MIN}
+              max={AGE_MAX}
+              step={1}
+              minGap={1}
+              formatRange={formatAgeRange}
+              onChange={(ageMin, ageMax) =>
+                setDraft(prev => ({ ...prev, ageMin, ageMax }))
+              }
+            />
 
             <BaseText
-              variant="body"
+              variant="bodyMedium"
               color={theme.custom.textSecondary}
               style={styles.sectionLabel}
-              children="Age range"
+              children="Show me people who"
             />
-            <View style={styles.chipRow}>
-              {[18, 21, 25, 30, 35, 40].map(age => (
-                <FilterChip
-                  key={`min-${age}`}
-                  label={`${age}+ min`}
-                  selected={draft.ageMin === age}
-                  onPress={() => setAgeMin(age)}
-                />
-              ))}
-            </View>
-            <View style={styles.chipRow}>
-              {[30, 35, 40, 45, 50, 65].map(age => (
-                <FilterChip
-                  key={`max-${age}`}
-                  label={`${age} max`}
-                  selected={draft.ageMax === age}
-                  onPress={() => setAgeMax(age)}
-                />
-              ))}
-            </View>
-
-            <BaseText
-              variant="body"
-              color={theme.custom.textSecondary}
-              style={styles.sectionLabel}
-              children="Show me"
-            />
-            <View style={styles.chipRow}>
-              <FilterChip
-                label="Verified only"
-                selected={Boolean(draft.verifiedOnly)}
-                onPress={() => toggleBool('verifiedOnly')}
+            <View
+              style={[
+                styles.groupCard,
+                {
+                  backgroundColor: theme.custom.surfaceVariant,
+                  borderColor: theme.custom.border,
+                },
+              ]}
+            >
+              <SheetToggleRow
+                label="Are verified"
+                value={Boolean(draft.verifiedOnly)}
+                onValueChange={v => toggleBool('verifiedOnly', v)}
               />
-              <FilterChip
-                label="Has bio"
-                selected={Boolean(draft.hasBio)}
-                onPress={() => toggleBool('hasBio')}
+              <View
+                style={[styles.groupDivider, { backgroundColor: theme.custom.border }]}
               />
-              <FilterChip
-                label="Online now"
-                selected={Boolean(draft.onlineNow)}
-                onPress={() => toggleBool('onlineNow')}
+              <SheetToggleRow
+                label="Have a bio"
+                value={Boolean(draft.hasBio)}
+                onValueChange={v => toggleBool('hasBio', v)}
               />
-              <FilterChip
-                label="Recently active"
-                selected={Boolean(draft.recentlyActive)}
-                onPress={() => toggleBool('recentlyActive')}
+              <View
+                style={[styles.groupDivider, { backgroundColor: theme.custom.border }]}
+              />
+              <SheetToggleRow
+                label="Are online now"
+                value={Boolean(draft.onlineNow)}
+                onValueChange={v => toggleBool('onlineNow', v)}
+              />
+              <View
+                style={[styles.groupDivider, { backgroundColor: theme.custom.border }]}
+              />
+              <SheetToggleRow
+                label="Were recently active"
+                value={Boolean(draft.recentlyActive)}
+                onValueChange={v => toggleBool('recentlyActive', v)}
               />
             </View>
           </ScrollView>
 
-          <View style={styles.footer}>
-            <GradientButton label="Apply filters" size="lg" onPress={handleApply} />
-          </View>
-        </Animated.View>
-      </View>
-    </Modal>
+            <View style={styles.footer}>
+              <GradientButton label="Apply" size="lg" onPress={handleApply} />
+            </View>
+          </Animated.View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
@@ -268,13 +265,6 @@ const styles = StyleSheet.create({
   modalRoot: {
     flex: 1,
     justifyContent: 'flex-end',
-  },
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0, 0, 0, 0.55)',
-    ...(Platform.OS === 'ios' && {
-      // Frosted feel via layered opacity; true blur needs native module
-    }),
   },
   sheet: {
     borderTopLeftRadius: metrics.radius['2xl'],
@@ -302,13 +292,19 @@ const styles = StyleSheet.create({
     paddingBottom: metrics.spacing.lg,
   },
   sectionLabel: {
-    fontWeight: '600',
+    fontWeight: '700',
+    marginTop: metrics.spacing.xl,
     marginBottom: metrics.spacing.sm,
-    marginTop: metrics.spacing.md,
   },
-  chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  groupCard: {
+    borderRadius: metrics.radius.xl,
+    borderWidth: 1,
+    overflow: 'hidden',
+    paddingHorizontal: metrics.spacing.md,
+  },
+  groupDivider: {
+    height: StyleSheet.hairlineWidth,
+    marginLeft: metrics.spacing.lg,
   },
   footer: {
     paddingHorizontal: metrics.spacing.lg,

@@ -40,3 +40,17 @@ export const ONBOARDING_IMAGES = {
 export const HOME_IMAGES = {
   header: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=400&fit=crop&q=85',
 };
+
+/** Tinder-style Explore category card backgrounds */
+export const EXPLORE_IMAGES = {
+  nightOut: require('../assets/images/explore/night-out.jpg'),
+  longTerm: require('../assets/images/explore/long-term.jpg'),
+  shortTerm: require('../assets/images/explore/short-term.jpg'),
+  newFriends: require('../assets/images/explore/new-friends.jpg'),
+  coffeeDates: require('../assets/images/explore/coffee-dates.jpg'),
+  travelBuddy: require('../assets/images/explore/travel-buddy.jpg'),
+  gymPartner: require('../assets/images/explore/gym-partner.jpg'),
+  foodies: require('../assets/images/explore/foodies.jpg'),
+  creativeSouls: require('../assets/images/explore/creative-souls.jpg'),
+  freeTonight: require('../assets/images/explore/free-tonight.jpg'),
+};

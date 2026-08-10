@@ -3,6 +3,7 @@
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["**/node_modules", "**/Pods"],
   "compilerOptions": {
+    "jsx": "react-native",
     "baseUrl": ".",
     "paths": {
       "@components": ["./src/components"],
