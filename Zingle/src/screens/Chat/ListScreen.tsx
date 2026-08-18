@@ -10,11 +10,11 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import type { ChatStackNavigationProp } from '@types';
-import { useThemeStore } from '@stores';
+import { useThemeStore, useSafetyStore, useChatStore } from '@stores';
 import { metrics } from '@styling/metrics';
 import { BaseText, ProfileAvatar, SafeAreaContainer } from '@components/atoms';
+import { EmptyState } from '@components/molecules';
 import {
-  MOCK_CONVERSATIONS,
   getOtherUserId,
   getProfileById,
   formatMessageTime,
@@ -126,11 +126,16 @@ export const ChatListScreen: React.FC = () => {
     [navigation],
   );
 
-  const conversations = useMemo(() => {
+  const conversations = useChatStore(state => state.conversations);
+  const blockedIds = useSafetyStore(state => state.blockedIds);
+
+  const filtered = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
-    const list = MOCK_CONVERSATIONS.filter(conv => {
+    const list = conversations.filter(conv => {
+      const otherId = getOtherUserId(conv);
+      if (blockedIds.includes(otherId)) return false;
       if (q.length === 0) return true;
-      const profile = getProfileById(getOtherUserId(conv));
+      const profile = getProfileById(otherId);
       const name = profile?.name ?? '';
       const preview = conv.lastMessage?.text ?? '';
       return (
@@ -143,7 +148,7 @@ export const ChatListScreen: React.FC = () => {
         new Date(b.lastMessageAt ?? b.createdAt).getTime() -
         new Date(a.lastMessageAt ?? a.createdAt).getTime(),
     );
-  }, [searchQuery]);
+  }, [searchQuery, conversations, blockedIds]);
 
   const renderRow = useCallback(
     ({ item }: { item: Conversation }) => {
@@ -267,7 +272,7 @@ export const ChatListScreen: React.FC = () => {
 
       <FlatList
         style={styles.list}
-        data={conversations}
+        data={filtered}
         renderItem={renderRow}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
@@ -275,33 +280,21 @@ export const ChatListScreen: React.FC = () => {
         keyboardShouldPersistTaps="handled"
         keyboardDismissMode="on-drag"
         ListEmptyComponent={
-          <View style={styles.empty}>
-            <MaterialCommunityIcons
-              name={
-                searchQuery.length > 0
-                  ? 'account-search-outline'
-                  : 'message-text-outline'
-              }
-              size={56}
-              color={theme.custom.textTertiary}
-            />
-            <BaseText
-              color={theme.custom.text}
-              style={{ fontSize: 17, fontWeight: '700' }}
-              children={
-                searchQuery.length > 0 ? 'No results found' : 'No conversations yet'
-              }
-            />
-            <BaseText
-              color={theme.custom.textSecondary}
-              style={{ fontSize: 14, textAlign: 'center' }}
-              children={
-                searchQuery.length > 0
-                  ? 'Try a different name or message'
-                  : 'Match with someone and start chatting'
-              }
-            />
-          </View>
+          <EmptyState
+            icon={
+              searchQuery.length > 0
+                ? 'account-search-outline'
+                : 'message-text-outline'
+            }
+            title={
+              searchQuery.length > 0 ? 'No results found' : 'No conversations yet'
+            }
+            subtitle={
+              searchQuery.length > 0
+                ? 'Try a different name or message'
+                : 'Match with someone and start chatting'
+            }
+          />
         }
       />
     </SafeAreaContainer>

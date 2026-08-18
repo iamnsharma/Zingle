@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
@@ -32,11 +33,11 @@ import {
 } from '@components/molecules';
 import { ImagePickerGrid } from '@components/molecules';
 import { INTERESTS, GENDER_OPTIONS, MIN_INTERESTS } from '@constants/onboarding';
+import { pickProfilePhotos } from '@utils/pickProfilePhotos';
 import {
   DEFAULT_MY_PROFILE,
   DRINKING_OPTIONS,
   EDUCATION_OPTIONS,
-  getNextPhotoPlaceholder,
   INTERESTED_IN_OPTIONS,
   LANGUAGE_OPTIONS,
   LOOKING_FOR_OPTIONS,
@@ -265,10 +266,11 @@ export const EditProfileScreen: React.FC = () => {
     [draft.languages, patchDraft],
   );
 
-  const handleAddPhoto = useCallback(() => {
+  const handleAddPhoto = useCallback(async () => {
     if (draft.photos.length >= 6) return;
-    const uri = getNextPhotoPlaceholder(draft.photos.length);
-    patchDraft({ photos: [...draft.photos, uri] });
+    const uris = await pickProfilePhotos(6 - draft.photos.length);
+    if (uris.length === 0) return;
+    patchDraft({ photos: [...draft.photos, ...uris].slice(0, 6) });
   }, [draft.photos, patchDraft]);
 
   const handleRemovePhoto = useCallback(
@@ -281,7 +283,26 @@ export const EditProfileScreen: React.FC = () => {
     [draft.photos, patchDraft],
   );
 
+  const handleReorderPhoto = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      if (toIndex < 0 || toIndex >= draft.photos.length) return;
+      const next = [...draft.photos];
+      const [moved] = next.splice(fromIndex, 1);
+      next.splice(toIndex, 0, moved);
+      patchDraft({ photos: next });
+    },
+    [draft.photos, patchDraft],
+  );
+
   const handleSave = useCallback(() => {
+    if (!draft.age || draft.age < 18) {
+      Alert.alert('18+ only', 'You must be 18 or older to use Zingle.');
+      return;
+    }
+    if (draft.photos.length < 1) {
+      Alert.alert('Add a photo', 'Your profile needs at least one photo.');
+      return;
+    }
     const updated: UserProfile = {
       ...draft,
       updatedAt: new Date().toISOString(),
@@ -342,12 +363,13 @@ export const EditProfileScreen: React.FC = () => {
               columns={3}
               onAddPress={handleAddPhoto}
               onRemovePress={handleRemovePhoto}
+              onReorder={handleReorderPhoto}
             />
             <BaseText
               variant="caption"
               color={theme.custom.textTertiary}
               style={styles.hint}
-              children="Tap + to add photos. First photo is your main profile picture."
+              children="Tap + to add photos. Use arrows to reorder — first photo is your main picture."
             />
           </View>
 

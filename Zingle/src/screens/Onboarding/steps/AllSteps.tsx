@@ -6,12 +6,14 @@ import {
   TouchableOpacity,
   Animated,
   Easing,
+  Image,
+  Alert,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useThemeStore } from '@stores';
 import { useOnboardingStore } from '@stores/onboardingStore';
 import { metrics } from '@styling/metrics';
-import { BaseText, BaseInput } from '@components/atoms';
+import { BaseText, BaseInput, GradientButton } from '@components/atoms';
 import {
   AnimatedInterestChip,
   SelectionCard,
@@ -26,7 +28,9 @@ import {
   MIN_INTERESTS,
   type InterestName,
 } from '@constants/onboarding';
-import { formatHeight } from '@constants/pickers';
+import { formatHeight, POPULAR_CITIES } from '@constants/pickers';
+import { pickProfilePhotos } from '@utils/pickProfilePhotos';
+import { requestApproximateLocation } from '@utils/requestLocation';
 
 const styles = StyleSheet.create({
   container: {
@@ -85,6 +89,37 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+  },
+  photoImage: {
+    width: '100%',
+    height: '100%',
+  },
+  photoRemove: {
+    position: 'absolute',
+    top: metrics.spacing.xs,
+    right: metrics.spacing.xs,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.65)',
+  },
+  photoReorderBar: {
+    position: 'absolute',
+    left: metrics.spacing.xs,
+    right: metrics.spacing.xs,
+    bottom: metrics.spacing.xs,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  photoReorderBtn: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0,0,0,0.65)',
   },
   mainBadge: {
     position: 'absolute',
@@ -618,9 +653,24 @@ export const OnboardingStep4: React.FC = () => {
   );
 };
 
-const PhotoSlot: React.FC<{ index: number; onPress: () => void }> = ({
+const PhotoSlot: React.FC<{
+  index: number;
+  uri?: string;
+  canMoveLeft?: boolean;
+  canMoveRight?: boolean;
+  onPress: () => void;
+  onRemove: () => void;
+  onMoveLeft?: () => void;
+  onMoveRight?: () => void;
+}> = ({
   index,
+  uri,
+  canMoveLeft,
+  canMoveRight,
   onPress,
+  onRemove,
+  onMoveLeft,
+  onMoveRight,
 }) => {
   const { theme } = useThemeStore();
   const anim = useRef(new Animated.Value(0)).current;
@@ -629,7 +679,7 @@ const PhotoSlot: React.FC<{ index: number; onPress: () => void }> = ({
   useEffect(() => {
     Animated.spring(anim, {
       toValue: 1,
-      delay: index * 120,
+      delay: index * 80,
       friction: 7,
       tension: 80,
       useNativeDriver: true,
@@ -659,17 +709,22 @@ const PhotoSlot: React.FC<{ index: number; onPress: () => void }> = ({
           {
             borderColor: isMain ? theme.colors.primary : theme.custom.border,
             backgroundColor: theme.custom.surfaceVariant,
+            borderStyle: uri ? 'solid' : 'dashed',
           },
         ]}
         onPress={onPress}
         activeOpacity={0.7}
       >
-        <MaterialCommunityIcons
-          name={isMain ? 'camera-plus' : 'plus'}
-          size={isMain ? 32 : 24}
-          color={theme.colors.primary}
-        />
-        {isMain && (
+        {uri ? (
+          <Image source={{ uri }} style={styles.photoImage} />
+        ) : (
+          <MaterialCommunityIcons
+            name={isMain ? 'camera-plus' : 'plus'}
+            size={isMain ? 32 : 24}
+            color={theme.colors.primary}
+          />
+        )}
+        {isMain && !uri ? (
           <View
             style={[
               styles.mainBadge,
@@ -678,19 +733,76 @@ const PhotoSlot: React.FC<{ index: number; onPress: () => void }> = ({
           >
             <BaseText variant="caption" color="#FFFFFF" children="Main" />
           </View>
-        )}
+        ) : null}
+        {uri ? (
+          <TouchableOpacity style={styles.photoRemove} onPress={onRemove}>
+            <MaterialCommunityIcons name="close" size={14} color="#FFFFFF" />
+          </TouchableOpacity>
+        ) : null}
+        {uri && (canMoveLeft || canMoveRight) ? (
+          <View style={styles.photoReorderBar}>
+            <TouchableOpacity
+              style={[styles.photoReorderBtn, { opacity: canMoveLeft ? 1 : 0.35 }]}
+              disabled={!canMoveLeft}
+              onPress={onMoveLeft}
+            >
+              <MaterialCommunityIcons
+                name="chevron-left"
+                size={16}
+                color="#FFFFFF"
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.photoReorderBtn,
+                { opacity: canMoveRight ? 1 : 0.35 },
+              ]}
+              disabled={!canMoveRight}
+              onPress={onMoveRight}
+            >
+              <MaterialCommunityIcons
+                name="chevron-right"
+                size={16}
+                color="#FFFFFF"
+              />
+            </TouchableOpacity>
+          </View>
+        ) : null}
       </TouchableOpacity>
     </Animated.View>
   );
 };
 
 export const OnboardingStep5: React.FC = () => {
+  const { data, updateData } = useOnboardingStore();
+  const photos = data.photos ?? [];
+
+  const handlePick = async () => {
+    const remaining = 6 - photos.length;
+    if (remaining <= 0) return;
+    const uris = await pickProfilePhotos(remaining);
+    if (uris.length === 0) return;
+    updateData({ photos: [...photos, ...uris].slice(0, 6) });
+  };
+
+  const handleRemove = (index: number) => {
+    updateData({ photos: photos.filter((_, i) => i !== index) });
+  };
+
+  const handleMove = (fromIndex: number, toIndex: number) => {
+    if (toIndex < 0 || toIndex >= photos.length) return;
+    const next = [...photos];
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
+    updateData({ photos: next });
+  };
+
   return (
     <View style={styles.container}>
       <StepHeader
         iconName="image-multiple-outline"
         title="Add photos"
-        subtitle="Profiles with 3+ photos get 3× more matches"
+        subtitle="Add at least 1 photo. Use arrows to reorder — first is your main."
       />
       <View style={styles.photoGrid}>
         {PHOTO_ROWS.map(row => (
@@ -699,7 +811,15 @@ export const OnboardingStep5: React.FC = () => {
               <PhotoSlot
                 key={index}
                 index={index}
-                onPress={() => console.log('Open photo picker', index)}
+                uri={photos[index]}
+                canMoveLeft={Boolean(photos[index]) && index > 0}
+                canMoveRight={
+                  Boolean(photos[index]) && index < photos.length - 1
+                }
+                onPress={handlePick}
+                onRemove={() => handleRemove(index)}
+                onMoveLeft={() => handleMove(index, index - 1)}
+                onMoveRight={() => handleMove(index, index + 1)}
               />
             ))}
           </View>
@@ -713,11 +833,33 @@ export const OnboardingStep6: React.FC = () => {
   const { theme } = useThemeStore();
   const { data, updateData } = useOnboardingStore();
   const [citySheetOpen, setCitySheetOpen] = useState(false);
+  const [locating, setLocating] = useState(false);
 
   const cityValue =
     typeof data.location === 'object' && data.location?.city
       ? data.location.city
       : undefined;
+
+  const applyCity = (city: string) => {
+    updateData({
+      location: { latitude: 0, longitude: 0, city },
+    });
+  };
+
+  const handleUseLocation = async () => {
+    setLocating(true);
+    const allowed = await requestApproximateLocation();
+    setLocating(false);
+    if (allowed) {
+      applyCity(POPULAR_CITIES[0]);
+      return;
+    }
+    Alert.alert(
+      'Choose a city',
+      'Location is off. Pick the city closest to you.',
+    );
+    setCitySheetOpen(true);
+  };
 
   return (
     <View style={styles.container}>
@@ -743,15 +885,19 @@ export const OnboardingStep6: React.FC = () => {
           />
         </View>
       </AnimatedField>
+      <GradientButton
+        label={locating ? 'Finding city...' : 'Use my location'}
+        size="md"
+        onPress={handleUseLocation}
+        disabled={locating}
+      />
 
       <CitySelectorSheet
         visible={citySheetOpen}
         value={cityValue}
         onClose={() => setCitySheetOpen(false)}
         onConfirm={city => {
-          updateData({
-            location: { latitude: 0, longitude: 0, city },
-          });
+          applyCity(city);
           setCitySheetOpen(false);
         }}
       />
@@ -882,15 +1028,19 @@ export const OnboardingStep7: React.FC = () => {
           <View
             style={[
               styles.reviewAvatar,
-              { backgroundColor: theme.colors.primary },
+              { backgroundColor: theme.colors.primary, overflow: 'hidden' },
             ]}
           >
-            <BaseText
-              variant="h2"
-              color="#FFFFFF"
-              style={styles.reviewAvatarText}
-              children={initial}
-            />
+            {data.photos?.[0] ? (
+              <Image source={{ uri: data.photos[0] }} style={styles.photoImage} />
+            ) : (
+              <BaseText
+                variant="h2"
+                color="#FFFFFF"
+                style={styles.reviewAvatarText}
+                children={initial}
+              />
+            )}
           </View>
           <View style={styles.reviewHeroText}>
             <BaseText

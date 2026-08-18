@@ -33,7 +33,11 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Zingle uses your city to show people nearby. You can pick a city instead.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Zingle needs photo access so you can add profile pictures.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Zingle needs photo access so you can add profile pictures.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>

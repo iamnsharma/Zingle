@@ -3,9 +3,13 @@ import { StyleSheet, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {
   useAuthStore,
+  useChatStore,
+  useFilterStore,
+  useMatchStore,
   useMembershipStore,
   useOnboardingStore,
   useProfileStore,
+  useSafetyStore,
   useThemeStore,
 } from '@stores';
 import type { MainAppNavigationProp } from '@types';
@@ -42,8 +46,12 @@ export const DeleteAccountScreen: React.FC = () => {
   const navigation = useNavigation<MainAppNavigationProp>();
   const logout = useAuthStore(state => state.logout);
   const resetOnboarding = useOnboardingStore(state => state.resetOnboarding);
-  const setCurrentUser = useProfileStore(state => state.setCurrentUser);
+  const resetProfile = useProfileStore(state => state.reset);
   const resetMembership = useMembershipStore(state => state.reset);
+  const resetMatch = useMatchStore(state => state.reset);
+  const resetChat = useChatStore(state => state.reset);
+  const resetFilters = useFilterStore(state => state.resetFilters);
+  const resetSafety = useSafetyStore(state => state.reset);
   const [loading, setLoading] = React.useState(false);
 
   const handleDelete = () => {
@@ -60,8 +68,12 @@ export const DeleteAccountScreen: React.FC = () => {
   const confirmDelete = () => {
     setLoading(true);
     resetOnboarding();
-    setCurrentUser(undefined);
+    resetProfile();
     resetMembership();
+    resetMatch();
+    resetChat();
+    resetFilters();
+    resetSafety();
     logout();
     setLoading(false);
   };

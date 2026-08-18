@@ -4,11 +4,13 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import type { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import {
   getFocusedRouteNameFromRoute,
+  useNavigation,
+  CommonActions,
   type RouteProp,
 } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useThemeStore } from '@stores';
+import { useThemeStore, useMatchStore, useChatStore } from '@stores';
 import type { MainBottomTabParamList } from '@types';
 import { metrics } from '@styling/metrics';
 import { HomeScreen } from '@screens/Home/SwipeScreen';
@@ -16,7 +18,7 @@ import { ExploreStack } from '@navigation/ExploreStack';
 import { ChatStack } from '@navigation/ChatStack';
 import { LikesStack } from '@navigation/LikesStack';
 import { ProfileScreen } from '@screens/Profile/ViewScreen';
-import { MOCK_CONVERSATIONS } from '@services/mock/data';
+import { ItsAMatchModal } from '@components/molecules';
 
 const Tab = createBottomTabNavigator<MainBottomTabParamList>();
 
@@ -106,9 +108,10 @@ const TabBarIcon: React.FC<TabBarIconProps> = ({
   const iconColor = focused ? accentColor : color;
   const iconName = focused ? config.iconFilled : config.iconOutline;
 
-  const showDot =
-    routeName === 'Chat' &&
-    MOCK_CONVERSATIONS.some(c => c.unreadCount > 0);
+  const unread = useChatStore(state =>
+    state.conversations.reduce((sum, item) => sum + item.unreadCount, 0),
+  );
+  const showDot = routeName === 'Chat' && unread > 0;
 
   return (
     <View style={styles.iconSlot}>
@@ -190,8 +193,12 @@ export const BottomTabNavigator = () => {
   const { theme } = useThemeStore();
   const insets = useSafeAreaInsets();
   const bottomInset = Math.max(insets.bottom, metrics.spacing.sm);
+  const navigation = useNavigation();
+  const pendingMatch = useMatchStore(state => state.pendingMatch);
+  const clearPendingMatch = useMatchStore(state => state.clearPendingMatch);
 
   return (
+    <>
     <Tab.Navigator
       screenOptions={({ route }) => {
         const config = TAB_CONFIG[route.name as TabRouteName];
@@ -231,5 +238,28 @@ export const BottomTabNavigator = () => {
       <Tab.Screen name="Chat" component={ChatStack} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
+    <ItsAMatchModal
+      visible={Boolean(pendingMatch)}
+      profile={pendingMatch?.profile}
+      onKeepSwiping={clearPendingMatch}
+      onSendMessage={() => {
+        const conversationId = pendingMatch?.conversationId;
+        clearPendingMatch();
+        if (!conversationId) return;
+        navigation.dispatch(
+          CommonActions.navigate({
+            name: 'MainBottomTab',
+            params: {
+              screen: 'Chat',
+              params: {
+                screen: 'ChatThread',
+                params: { conversationId },
+              },
+            },
+          }),
+        );
+      }}
+    />
+    </>
   );
 };

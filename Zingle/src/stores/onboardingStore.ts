@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { OnboardingData } from '@types';
 
 interface OnboardingStoreState {
@@ -13,30 +15,32 @@ interface OnboardingStoreState {
 
 const initialOnboardingData: OnboardingData = {};
 
-export const useOnboardingStore = create<OnboardingStoreState>((set) => ({
-  data: initialOnboardingData,
-  currentStep: 1,
-  isCompleted: false,
-
-  updateData: (newData: Partial<OnboardingData>) =>
-    set((state) => ({
-      data: { ...state.data, ...newData },
-    })),
-
-  setCurrentStep: (step: number) =>
-    set({
-      currentStep: step,
-    }),
-
-  completeOnboarding: () =>
-    set({
-      isCompleted: true,
-    }),
-
-  resetOnboarding: () =>
-    set({
+export const useOnboardingStore = create<OnboardingStoreState>()(
+  persist(
+    set => ({
       data: initialOnboardingData,
       currentStep: 1,
       isCompleted: false,
+
+      updateData: newData =>
+        set(state => ({
+          data: { ...state.data, ...newData },
+        })),
+
+      setCurrentStep: step => set({ currentStep: step }),
+
+      completeOnboarding: () => set({ isCompleted: true }),
+
+      resetOnboarding: () =>
+        set({
+          data: initialOnboardingData,
+          currentStep: 1,
+          isCompleted: false,
+        }),
     }),
-}));
+    {
+      name: 'zingle-onboarding-v1',
+      storage: createJSONStorage(() => AsyncStorage),
+    },
+  ),
+);

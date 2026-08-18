@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
   sheet: {
     borderTopLeftRadius: metrics.radius['2xl'],
     borderTopRightRadius: metrics.radius['2xl'],
+    overflow: 'hidden',
     ...metrics.shadows.lg,
   },
   sheetColumn: {
@@ -60,14 +61,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: metrics.spacing.lg,
     paddingBottom: metrics.spacing.sm,
     gap: metrics.spacing.xs,
+    flexShrink: 0,
   },
   body: {
     paddingHorizontal: metrics.spacing.lg,
-    flexShrink: 1,
+    paddingBottom: metrics.spacing.md,
   },
   bodyScroll: {
-    flexGrow: 0,
-    flexShrink: 1,
+    flex: 1,
   },
   footer: {
     paddingHorizontal: metrics.spacing.lg,
@@ -173,8 +174,9 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
     <ScrollView
       style={styles.bodyScroll}
       contentContainerStyle={styles.body}
-      bounces={false}
-      showsVerticalScrollIndicator={false}
+      bounces
+      nestedScrollEnabled
+      showsVerticalScrollIndicator
       keyboardShouldPersistTaps="handled"
     >
       {children}
@@ -206,6 +208,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
               styles.sheetColumn,
               {
                 maxHeight: maxSheetHeight,
+                height: scrollable ? maxSheetHeight : undefined,
                 paddingBottom: insets.bottom + metrics.spacing.sm,
                 backgroundColor: theme.colors.surface,
                 transform: [{ translateY }],

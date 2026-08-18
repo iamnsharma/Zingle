@@ -15,15 +15,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { ChatStackNavigationProp, ChatStackParamList } from '@types';
-import { useThemeStore, useSafetyStore } from '@stores';
+import { useThemeStore, useSafetyStore, useChatStore } from '@stores';
 import { metrics } from '@styling/metrics';
 import { BaseText, ProfileAvatar, SafeAreaContainer } from '@components/atoms';
-import { ChatBubble, UserActionsSheet, ReportBottomSheet } from '@components/molecules';
+import { ChatBubble, UserActionsSheet, ReportBottomSheet, EmptyState } from '@components/molecules';
 import {
-  getConversationById,
   getOtherUserId,
   getProfileById,
-  getMessagesForConversation,
   formatMessageTime,
 } from '@services/mock/data';
 import type { Message } from '@types';
@@ -139,11 +137,15 @@ export const ChatThreadScreen: React.FC = () => {
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [actionsOpen, setActionsOpen] = useState(false);
   const [reportOpen, setReportOpen] = useState(false);
-  const [localMessages, setLocalMessages] = useState<Message[]>(() =>
-    getMessagesForConversation(conversationId),
-  );
 
-  const conversation = getConversationById(conversationId);
+  const conversation = useChatStore(state =>
+    state.conversations.find(item => item.id === conversationId),
+  );
+  const localMessages = useChatStore(
+    state => state.messagesById[conversationId] ?? [],
+  );
+  const sendMessage = useChatStore(state => state.sendMessage);
+  const markRead = useChatStore(state => state.markRead);
   const otherUserId = conversation ? getOtherUserId(conversation) : '';
   const profile = getProfileById(otherUserId);
 
@@ -153,10 +155,14 @@ export const ChatThreadScreen: React.FC = () => {
       : insets.bottom + metrics.spacing.sm;
 
   useEffect(() => {
-    setLocalMessages(getMessagesForConversation(conversationId));
+    markRead(conversationId);
     setDraft('');
     setShowTyping(false);
-  }, [conversationId]);
+  }, [conversationId, markRead]);
+
+  useEffect(() => {
+    markRead(conversationId);
+  }, [localMessages.length, conversationId, markRead]);
 
   useEffect(() => {
     const isIOS = Platform.OS === 'ios';
@@ -209,34 +215,23 @@ export const ChatThreadScreen: React.FC = () => {
     };
   }, [conversationId, profile?.online]);
 
-  const appendMessage = useCallback(
-    (text: string) => {
-      const trimmed = text.trim();
-      if (trimmed.length === 0) return;
-      const newMsg: Message = {
-        id: `local-${Date.now()}`,
-        conversationId,
-        senderId: 'me',
-        text: trimmed,
-        createdAt: new Date().toISOString(),
-        readAt: new Date().toISOString(),
-      };
-      setLocalMessages(prev => [...prev, newMsg]);
-      setDraft('');
-      setShowTyping(false);
-      setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
-    },
-    [conversationId],
-  );
-
   const handleSend = useCallback(() => {
-    appendMessage(draft);
-  }, [appendMessage, draft]);
+    const trimmed = draft.trim();
+    if (!trimmed) return;
+    sendMessage(conversationId, trimmed);
+    setDraft('');
+    setShowTyping(false);
+    setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 50);
+  }, [conversationId, draft, sendMessage]);
 
   if (!conversation || !profile) {
     return (
       <SafeAreaContainer>
-        <BaseText variant="body" children="Conversation not found" />
+        <EmptyState
+          icon="chat-remove-outline"
+          title="Conversation not found"
+          subtitle="This match may have been removed or blocked."
+        />
       </SafeAreaContainer>
     );
   }
@@ -347,18 +342,11 @@ export const ChatThreadScreen: React.FC = () => {
             }
           }}
           ListEmptyComponent={
-            <View style={styles.emptyChat}>
-              <MaterialCommunityIcons
-                name="chat-outline"
-                size={48}
-                color={theme.custom.textTertiary}
-              />
-              <BaseText
-                color={theme.custom.text}
-                style={{ fontSize: 16, fontWeight: '700' }}
-                children={`Say hi to ${profile.name}`}
-              />
-            </View>
+            <EmptyState
+              icon="chat-outline"
+              title={`Say hi to ${profile.name}`}
+              subtitle="This is the start of your conversation."
+            />
           }
         />
 
@@ -373,6 +361,22 @@ export const ChatThreadScreen: React.FC = () => {
           ]}
         >
           <View style={styles.inputBar}>
+            <TouchableOpacity
+              style={styles.attachBtn}
+              onPress={() =>
+                Alert.alert(
+                  'Coming Soon',
+                  'Photos in chat will be available later.',
+                )
+              }
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              <MaterialCommunityIcons
+                name="plus"
+                size={26}
+                color={theme.custom.textSecondary}
+              />
+            </TouchableOpacity>
             <View
               style={[
                 styles.inputWrap,

@@ -13,7 +13,7 @@ import {
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useThemeStore, useProfileStore, useMembershipStore } from '@stores';
+import { useThemeStore, useProfileStore, useMembershipStore, useSafetyStore } from '@stores';
 import { useMatchStore } from '@stores/matchStore';
 import { useFilterStore } from '@stores/filterStore';
 import { metrics } from '@styling/metrics';
@@ -236,16 +236,41 @@ const SwipeActionButton: React.FC<SwipeActionButtonProps> = ({
 
 export const HomeScreen: React.FC = () => {
   const { theme } = useThemeStore();
-  const { setProfiles } = useMatchStore();
-  const { hasActiveFilters, resetFilters } = useFilterStore();
+  const { hasActiveFilters, resetFilters, filters } = useFilterStore();
   const glassEnabled = useProfileStore(state => state.appSettings.liquidGlass);
+  const interestedIn = useProfileStore(state => state.currentUser?.interestedIn);
   const consumeLike = useMembershipStore(state => state.consumeLike);
   const consumeSuperLike = useMembershipStore(state => state.consumeSuperLike);
+  const seenIds = useMatchStore(state => state.seenIds);
+  const recordPass = useMatchStore(state => state.recordPass);
+  const recordLike = useMatchStore(state => state.recordLike);
+  const blockedIds = useSafetyStore(state => state.blockedIds);
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [profiles] = useState(MOCK_PROFILES);
+  const profiles = useMemo(
+    () =>
+      MOCK_PROFILES.filter(profile => {
+        if (seenIds.includes(profile.id)) return false;
+        if (blockedIds.includes(profile.id)) return false;
+        if (
+          profile.age < (filters.ageMin ?? 18) ||
+          profile.age > (filters.ageMax ?? 80)
+        ) {
+          return false;
+        }
+        const showMe =
+          filters.showMe && filters.showMe.length > 0
+            ? filters.showMe
+            : interestedIn;
+        if (showMe && showMe.length > 0 && !showMe.includes(profile.gender)) {
+          return false;
+        }
+        return true;
+      }),
+    [seenIds, blockedIds, filters, interestedIn],
+  );
+
   const [filterOpen, setFilterOpen] = useState(false);
   const [limitOpen, setLimitOpen] = useState<'likes' | 'superLikes' | null>(null);
 
@@ -261,9 +286,11 @@ export const HomeScreen: React.FC = () => {
     panY.setValue(0);
   }, [panX, panY]);
 
+  const currentProfile = profiles[0];
+
   React.useEffect(() => {
     resetPan();
-  }, [currentIndex, resetPan]);
+  }, [currentProfile?.id, resetPan]);
 
   // Warm up remote images once so the first swipe doesn't stutter while the
   // next card decodes its photos.
@@ -290,14 +317,11 @@ export const HomeScreen: React.FC = () => {
     [cardWidth, cardHeight],
   );
 
-  React.useEffect(() => {
-    setProfiles(profiles);
-  }, [profiles, setProfiles]);
-
   const completeSwipe = useCallback(
     (action: SwipeAction) => {
-      if (isAnimating.current) return;
+      if (isAnimating.current || !currentProfile) return;
       isAnimating.current = true;
+      const swiped = currentProfile;
 
       const targets: Record<SwipeAction, { x: number; y: number }> = {
         like: { x: width * 1.4, y: 0 },
@@ -323,11 +347,15 @@ export const HomeScreen: React.FC = () => {
           isAnimating.current = false;
           return;
         }
-        setCurrentIndex(prev => prev + 1);
+        if (action === 'pass') {
+          recordPass(swiped);
+        } else {
+          recordLike(swiped, action === 'superlike' ? 'superlike' : 'like');
+        }
         isAnimating.current = false;
       });
     },
-    [width, height, panX, panY],
+    [width, height, panX, panY, currentProfile, recordPass, recordLike],
   );
 
   const snapBack = useCallback(() => {
@@ -414,8 +442,6 @@ export const HomeScreen: React.FC = () => {
       setFilterOpen(true);
     }
   };
-
-  const currentProfile = profiles[currentIndex];
 
   const rotate = panX.interpolate({
     inputRange: [-width / 2, 0, width / 2],
@@ -567,17 +593,18 @@ export const HomeScreen: React.FC = () => {
           </View>
         </View>
         <View style={styles.emptyContainer}>
-          <MaterialCommunityIcons name="heart-off-outline" size={64} color={theme.custom.textTertiary} />
-          <BaseText variant="h2" color={theme.custom.text} style={styles.emptyText} children="No more profiles" />
-          <BaseText variant="body" color={theme.custom.textSecondary} children="Come back later for more matches" />
+          <EmptyState
+            icon="cards-playing-outline"
+            title="No more profiles"
+            subtitle="Come back later, or loosen filters to see more people."
+          />
         </View>
         <FilterBottomSheet visible={filterOpen} onClose={() => setFilterOpen(false)} />
       </SafeAreaView>
     );
   }
 
-  const hasMore = currentIndex < profiles.length - 1;
-  const nextProfile = profiles[currentIndex + 1];
+  const nextProfile = profiles[1];
 
   return (
     <SafeAreaView
@@ -607,7 +634,7 @@ export const HomeScreen: React.FC = () => {
       </View>
 
       <View style={styles.cardContainer}>
-        {hasMore && nextProfile ? (
+        {nextProfile ? (
           <View
             style={[
               styles.card,

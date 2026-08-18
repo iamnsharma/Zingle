@@ -222,14 +222,14 @@ New files (suggested):
 
 Onboarding UI stays. Make photos + location + save actually work locally, shaped like the API.
 
-- [ ] Gallery picker (`react-native-image-picker` or equivalent) on onboarding + Edit Profile
-- [ ] Select 1–6 photos, preview, delete, reorder (long-press or up/down)
-- [ ] Persist photo URIs locally until backend upload exists
-- [ ] Require at least 1 photo to finish onboarding
-- [ ] Name, age, gender, bio, city, interests already in wizard — persist to `profileStore`
-- [ ] Location: permission prompt + fallback to city list if denied
-- [ ] Edit Profile writes the same fields
-- [ ] Discovery prefs (age range, show me / gender) editable from Settings and saved
+- [x] Gallery picker (`react-native-image-picker` or equivalent) on onboarding + Edit Profile
+- [x] Select 1–6 photos, preview, delete, reorder (long-press or up/down)
+- [x] Persist photo URIs locally until backend upload exists
+- [x] Require at least 1 photo to finish onboarding
+- [x] Name, age, gender, bio, city, interests already in wizard — persist to `profileStore`
+- [x] Location: permission prompt + fallback to city list if denied
+- [x] Edit Profile writes the same fields
+- [x] Discovery prefs (age range, show me / gender) editable from Settings and saved
 
 Skip: photo editor, AI quality, selfie/ID verification.
 
@@ -239,13 +239,13 @@ Skip: photo editor, AI quality, selfie/ID verification.
 
 This is the most important missing product piece.
 
-- [ ] Like / pass / super like go through `swipeService` (mock)
-- [ ] Mock reciprocal like → `{ matched: true }`
-- [ ] **It's a Match!** modal: photos, names, **Send Message** / **Keep Swiping**
-- [ ] Send Message opens `ChatThread` for that match
-- [ ] Persist seen / liked / passed locally so cards do not repeat in-session
-- [ ] Likes tab reads from the same like store (not only `MOCK_LIKES`)
-- [ ] Wire `Matches` into Chat list (new matches appear in Messages)
+- [x] Like / pass / super like go through `swipeService` (mock)
+- [x] Mock reciprocal like → `{ matched: true }`
+- [x] **It's a Match!** modal: photos, names, **Send Message** / **Keep Swiping**
+- [x] Send Message opens `ChatThread` for that match
+- [x] Persist seen / liked / passed locally so cards do not repeat in-session
+- [x] Likes tab reads from the same like store (not only `MOCK_LIKES`)
+- [x] Wire `Matches` into Chat list (new matches appear in Messages)
 
 Suggested: `src/components/molecules/ItsAMatchModal/`
 
@@ -255,12 +255,12 @@ Suggested: `src/components/molecules/ItsAMatchModal/`
 
 Reuse `ChatThreadScreen` / `ListScreen`.
 
-- [ ] Send text → append to thread (optimistic)
-- [ ] Sent / received bubbles, timestamps
-- [ ] Unread count on Messages tab (already has a red dot — drive it from store)
-- [ ] Basic pagination stub (load older = no-op or local slice)
-- [ ] Empty states: no matches, no messages
-- [ ] Attachment `+` stays visible but **Coming Soon** (do not build camera/gallery in chat)
+- [x] Send text → append to thread (optimistic)
+- [x] Sent / received bubbles, timestamps
+- [x] Unread count on Messages tab (already has a red dot — drive it from store)
+- [x] Basic pagination stub (load older = no-op or local slice)
+- [x] Empty states: no matches, no messages
+- [x] Attachment `+` stays visible but **Coming Soon** (do not build camera/gallery in chat)
 
 Realtime: mock with a delayed echo or second local user later; live sockets in Track B.
 
@@ -270,12 +270,12 @@ Realtime: mock with a delayed echo or second local user later; live sockets in T
 
 Apple UGC (Guideline 1.2) and Play dating/social apps expect report + block + contact + terms.
 
-- [ ] Report sheet on profile + chat header: reason list → submit
-- [ ] Block: confirm → remove from feed, hide chat, add to Blocked list
-- [ ] Blocked accounts screen (Settings row currently closes sheet)
-- [ ] Help & support screen: FAQ + contact email
-- [ ] Terms, Privacy Policy, Community Guidelines — tappable from Landing, Signup, Settings
-- [ ] In-app pages or WebView to hosted URLs (hosted pages required for stores anyway)
+- [x] Report sheet on profile + chat header: reason list → submit
+- [x] Block: confirm → remove from feed, hide chat, add to Blocked list
+- [x] Blocked accounts screen (Settings row currently closes sheet)
+- [x] Help & support screen: FAQ + contact email
+- [x] Terms, Privacy Policy, Community Guidelines — tappable from Landing, Signup, Settings
+- [x] In-app pages or WebView to hosted URLs (hosted pages required for stores anyway)
 
 Report reasons: Fake profile · Harassment · Spam · Inappropriate content · Other
 
@@ -283,12 +283,12 @@ Report reasons: Fake profile · Harassment · Spam · Inappropriate content · O
 
 ### Sprint M6 — Store-ready mobile shell
 
-- [ ] Loading / empty / error states on Swipe, Likes, Chat, Profile
-- [ ] Permission strings: Photos, Location (iOS `Info.plist`, Android `AndroidManifest`)
-- [ ] Age gate: 18+ only (birth date / age already in onboarding — enforce)
+- [x] Loading / empty / error states on Swipe, Likes, Chat, Profile
+- [x] Permission strings: Photos, Location (iOS `Info.plist`, Android `AndroidManifest`)
+- [x] Age gate: 18+ only (birth date / age already in onboarding — enforce)
 - [ ] App icon + splash (replace placeholders if still default)
-- [ ] Crash-safe: failed login, failed upload, empty discover
-- [ ] Hide or disable Verified “selfie confirmed” fake checkbox (or label Coming Soon)
+- [x] Crash-safe: failed login, failed upload, empty discover
+- [x] Hide or disable Verified “selfie confirmed” fake checkbox (or label Coming Soon)
 
 ---
 

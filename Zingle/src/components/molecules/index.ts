@@ -22,6 +22,7 @@ export { SheetToggleRow } from './SheetToggleRow';
 export { SheetNavRow } from './SheetNavRow';
 export { SettingsGroup } from './SettingsGroup';
 export { EmptyState } from './EmptyState';
+export { ItsAMatchModal } from './ItsAMatchModal';
 export { ReportBottomSheet } from './ReportBottomSheet';
 export { UserActionsSheet } from './UserActionsSheet';
 export { ImagePickerGrid } from './ImagePickerGrid';

@@ -252,8 +252,8 @@ export function getProfileCompletionItems(
       weight: 10,
     },
     {
-      label: 'Verify profile',
-      done: profile.verified,
+      label: 'Verify profile (Coming Soon)',
+      done: true,
       weight: 10,
     },
   ];

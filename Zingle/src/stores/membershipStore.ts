@@ -73,13 +73,7 @@ export const useMembershipStore = create<MembershipState>()(
               : state.likes + REFILL_BATCH.likes,
         })),
 
-      consumeLike: () => {
-        const { likes } = get();
-        if (likes === UNLIMITED) return true;
-        if (likes <= 0) return false;
-        set({ likes: likes - 1 });
-        return true;
-      },
+      consumeLike: () => true,
 
       consumeSuperLike: () => {
         const { superLikes } = get();

@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, TextInput } from 'react-native';
+import { StyleSheet, View, TextInput, TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useAuthStore } from '@stores/authStore';
 import { useOnboardingStore } from '@stores/onboardingStore';
@@ -19,10 +19,11 @@ const styles = StyleSheet.create({
   submit: {
     marginTop: metrics.spacing.sm,
   },
-  privacy: {
-    textAlign: 'center',
+  legalRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
     marginTop: metrics.spacing.lg,
-    lineHeight: 18,
     paddingHorizontal: metrics.spacing.sm,
   },
 });
@@ -129,12 +130,34 @@ export const SignupScreen: React.FC<SignupScreenProps> = ({ navigation }) => {
           loading={loading}
           style={styles.submit}
         />
-        <BaseText
-          variant="caption"
-          color="rgba(255, 255, 255, 0.55)"
-          style={styles.privacy}
-          children="By tapping Continue, you agree to our Terms of Service and Privacy Policy"
-        />
+        <View style={styles.legalRow}>
+          <BaseText
+            variant="caption"
+            color="rgba(255, 255, 255, 0.55)"
+            children="By tapping Continue, you agree to our "
+          />
+          <TouchableOpacity onPress={() => navigation.navigate('Legal', { document: 'terms' })}>
+            <BaseText variant="caption" color="#FFFFFF" children="Terms" />
+          </TouchableOpacity>
+          <BaseText
+            variant="caption"
+            color="rgba(255, 255, 255, 0.55)"
+            children=" and "
+          />
+          <TouchableOpacity onPress={() => navigation.navigate('Legal', { document: 'privacy' })}>
+            <BaseText variant="caption" color="#FFFFFF" children="Privacy Policy" />
+          </TouchableOpacity>
+          <BaseText
+            variant="caption"
+            color="rgba(255, 255, 255, 0.55)"
+            children=", and "
+          />
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Legal', { document: 'guidelines' })}
+          >
+            <BaseText variant="caption" color="#FFFFFF" children="Community Guidelines" />
+          </TouchableOpacity>
+        </View>
       </View>
     </AuthScreenLayout>
   );

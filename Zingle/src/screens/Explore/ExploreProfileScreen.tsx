@@ -3,7 +3,7 @@ import { StyleSheet, View, Image, Alert } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { ExploreStackNavigationProp, ExploreStackParamList } from '@types';
-import { useThemeStore, useSafetyStore } from '@stores';
+import { useThemeStore, useSafetyStore, useMatchStore } from '@stores';
 import { metrics } from '@styling/metrics';
 import { BaseText, SafeAreaContainer } from '@components/atoms';
 import {
@@ -75,6 +75,8 @@ export const ExploreProfileScreen: React.FC = () => {
 
   const profile = getProfileById(userId);
   const category = getExploreCategoryById(categoryId);
+  const recordLike = useMatchStore(state => state.recordLike);
+  const recordPass = useMatchStore(state => state.recordPass);
 
   if (!profile) {
     return (
@@ -172,8 +174,14 @@ export const ExploreProfileScreen: React.FC = () => {
 
       <ExploreActionFooter
         revealed={atBottom}
-        onLike={() => navigation.goBack()}
-        onPass={() => navigation.goBack()}
+        onLike={() => {
+          recordLike(profile);
+          navigation.goBack();
+        }}
+        onPass={() => {
+          recordPass(profile);
+          navigation.goBack();
+        }}
       />
       <UserActionsSheet
         visible={actionsOpen}

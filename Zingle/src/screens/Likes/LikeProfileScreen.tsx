@@ -13,11 +13,11 @@ import LinearGradient from 'react-native-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { LikesStackNavigationProp, LikesStackParamList } from '@types';
-import { useThemeStore, useSafetyStore } from '@stores';
+import { useThemeStore, useSafetyStore, useMatchStore } from '@stores';
 import { metrics } from '@styling/metrics';
 import { BaseText, GradientButton, SafeAreaContainer } from '@components/atoms';
 import { UserActionsSheet, ReportBottomSheet } from '@components/molecules';
-import { getLikeByUserId, getProfileById } from '@services/mock/data';
+import { getProfileById } from '@services/mock/data';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -136,8 +136,11 @@ export const LikeProfileScreen: React.FC = () => {
   const route = useRoute<RouteProp<LikesStackParamList, 'LikeProfile'>>();
   const { userId } = route.params;
 
-  const profile = getProfileById(userId);
-  const like = getLikeByUserId(userId);
+  const likes = useMatchStore(state => state.likes);
+  const recordLike = useMatchStore(state => state.recordLike);
+  const recordPass = useMatchStore(state => state.recordPass);
+  const like = likes.find(item => item.userId === userId);
+  const profile = like?.user ?? getProfileById(userId);
   const [actionsOpen, setActionsOpen] = React.useState(false);
   const [reportOpen, setReportOpen] = React.useState(false);
 
@@ -284,7 +287,10 @@ export const LikeProfileScreen: React.FC = () => {
       >
         <TouchableOpacity
           style={[styles.passBtn, { borderColor: theme.custom.border }]}
-          onPress={() => navigation.goBack()}
+          onPress={() => {
+            recordPass(profile);
+            navigation.goBack();
+          }}
         >
           <MaterialCommunityIcons name="close" size={28} color={theme.custom.textSecondary} />
         </TouchableOpacity>
@@ -292,7 +298,10 @@ export const LikeProfileScreen: React.FC = () => {
           <GradientButton
             label="Like back"
             size="lg"
-            onPress={() => navigation.goBack()}
+            onPress={() => {
+              recordLike(profile);
+              navigation.goBack();
+            }}
           />
         </View>
       </View>

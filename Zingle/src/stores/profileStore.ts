@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AppSettings, PrivacySettings, UserProfile } from '@types';
 
 export const defaultPrivacySettings: PrivacySettings = {
@@ -35,44 +37,55 @@ interface ProfileStoreState {
 
   setLoading: (loading: boolean) => void;
   setError: (error?: string) => void;
+  reset: () => void;
 }
 
-export const useProfileStore = create<ProfileStoreState>((set) => ({
-  currentUser: undefined,
-  privacySettings: defaultPrivacySettings,
-  appSettings: defaultAppSettings,
-  loading: false,
-  error: undefined,
+export const useProfileStore = create<ProfileStoreState>()(
+  persist(
+    set => ({
+      currentUser: undefined,
+      privacySettings: defaultPrivacySettings,
+      appSettings: defaultAppSettings,
+      loading: false,
+      error: undefined,
 
-  setCurrentUser: (user: UserProfile | undefined) =>
-    set({
-      currentUser: user,
+      setCurrentUser: user => set({ currentUser: user }),
+
+      updateCurrentUser: updates =>
+        set(state => ({
+          currentUser: state.currentUser
+            ? { ...state.currentUser, ...updates, updatedAt: new Date().toISOString() }
+            : undefined,
+        })),
+
+      updatePrivacySettings: updates =>
+        set(state => ({
+          privacySettings: { ...state.privacySettings, ...updates },
+        })),
+
+      updateAppSettings: updates =>
+        set(state => ({
+          appSettings: { ...state.appSettings, ...updates },
+        })),
+
+      setLoading: loading => set({ loading }),
+      setError: error => set({ error }),
+      reset: () =>
+        set({
+          currentUser: undefined,
+          privacySettings: defaultPrivacySettings,
+          appSettings: defaultAppSettings,
+          error: undefined,
+        }),
     }),
-
-  updateCurrentUser: (updates: Partial<UserProfile>) =>
-    set((state) => ({
-      currentUser: state.currentUser
-        ? { ...state.currentUser, ...updates }
-        : undefined,
-    })),
-
-  updatePrivacySettings: (updates: Partial<PrivacySettings>) =>
-    set((state) => ({
-      privacySettings: { ...state.privacySettings, ...updates },
-    })),
-
-  updateAppSettings: (updates: Partial<AppSettings>) =>
-    set((state) => ({
-      appSettings: { ...state.appSettings, ...updates },
-    })),
-
-  setLoading: (loading: boolean) =>
-    set({
-      loading,
-    }),
-
-  setError: (error?: string) =>
-    set({
-      error,
-    }),
-}));
+    {
+      name: 'zingle-profile-v1',
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: state => ({
+        currentUser: state.currentUser,
+        privacySettings: state.privacySettings,
+        appSettings: state.appSettings,
+      }),
+    },
+  ),
+);

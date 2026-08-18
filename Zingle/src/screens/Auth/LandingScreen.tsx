@@ -69,6 +69,9 @@ const styles = StyleSheet.create({
     paddingVertical: metrics.spacing.sm,
   },
   privacy: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
     paddingHorizontal: metrics.spacing.lg,
     paddingVertical: metrics.spacing.sm,
   },
@@ -146,7 +149,51 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
             variant="caption"
             color="rgba(255, 255, 255, 0.55)"
             style={styles.privacyText}
-            children="By tapping Create account or Sign in, you agree to our Terms. Learn how we process your data in our Privacy Policy."
+            children="By tapping Create account or Sign in, you agree to our "
+          />
+          <TouchableOpacity onPress={() => navigation.navigate('Legal', { document: 'terms' })}>
+            <BaseText
+              variant="caption"
+              color="#FFFFFF"
+              style={styles.privacyText}
+              children="Terms"
+            />
+          </TouchableOpacity>
+          <BaseText
+            variant="caption"
+            color="rgba(255, 255, 255, 0.55)"
+            style={styles.privacyText}
+            children=" and "
+          />
+          <TouchableOpacity onPress={() => navigation.navigate('Legal', { document: 'privacy' })}>
+            <BaseText
+              variant="caption"
+              color="#FFFFFF"
+              style={styles.privacyText}
+              children="Privacy Policy"
+            />
+          </TouchableOpacity>
+          <BaseText
+            variant="caption"
+            color="rgba(255, 255, 255, 0.55)"
+            style={styles.privacyText}
+            children=", and "
+          />
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Legal', { document: 'guidelines' })}
+          >
+            <BaseText
+              variant="caption"
+              color="#FFFFFF"
+              style={styles.privacyText}
+              children="Community Guidelines"
+            />
+          </TouchableOpacity>
+          <BaseText
+            variant="caption"
+            color="rgba(255, 255, 255, 0.55)"
+            style={styles.privacyText}
+            children="."
           />
         </View>
       </View>

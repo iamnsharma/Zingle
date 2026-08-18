@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -130,6 +131,8 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
         return Boolean(data.bio?.trim() && (data.bio?.length || 0) >= 20);
       case 4:
         return ((data.interests as string[]) || []).length >= MIN_INTERESTS;
+      case 5:
+        return (data.photos?.length || 0) >= 1;
       case 6:
         return Boolean(
           typeof data.location === 'object' && data.location?.city?.trim()
@@ -160,6 +163,27 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
     setCurrentUser,
   ]);
 
+  const handleSkip = useCallback(() => {
+    if (!data.name?.trim() || !data.age || data.age < 18) {
+      Alert.alert('18+ only', 'Add your name and confirm you are 18 or older.');
+      return;
+    }
+    if ((data.photos?.length || 0) < 1) {
+      Alert.alert('Add a photo', 'Your profile needs at least one photo.');
+      return;
+    }
+    const city =
+      typeof data.location === 'object' ? data.location?.city?.trim() : '';
+    if (!city) {
+      Alert.alert('Add a city', 'Pick a city so we can show people nearby.');
+      return;
+    }
+    const profile = buildProfileFromOnboarding(data, currentUser);
+    setCurrentUser(profile);
+    completeOnboarding();
+    onSkip?.();
+  }, [completeOnboarding, currentUser, data, onSkip, setCurrentUser]);
+
   const handlePrevious = useCallback(() => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
@@ -171,7 +195,7 @@ export const OnboardingContainer: React.FC<OnboardingContainerProps> = ({
       <View style={styles.topBar}>
         <TouchableOpacity
           style={[styles.skipButton, { backgroundColor: theme.colors.surface }]}
-          onPress={onSkip}
+          onPress={handleSkip}
         >
           <BaseText
             variant="body"

@@ -1,23 +1,30 @@
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import type { NavigatorScreenParams } from '@react-navigation/native';
 
 export type AuthStackParamList = {
   Landing: undefined;
   Login: undefined;
   Signup: undefined;
   ForgotPassword: undefined;
+  Legal: { document: 'terms' | 'privacy' | 'guidelines' };
+};
+
+export type ChatStackParamList = {
+  ChatList: undefined;
+  ChatThread: { conversationId: string };
 };
 
 export type MainBottomTabParamList = {
   Home: undefined;
   Explore: undefined;
   Likes: undefined;
-  Chat: undefined;
+  Chat: NavigatorScreenParams<ChatStackParamList> | undefined;
   Profile: undefined;
 };
 
 export type MainAppStackParamList = {
-  MainBottomTab: undefined;
+  MainBottomTab: NavigatorScreenParams<MainBottomTabParamList> | undefined;
   Onboarding: undefined;
   EditProfile: undefined;
   DeleteAccount: undefined;
@@ -29,11 +36,6 @@ export type MainAppStackParamList = {
 export type LikesStackParamList = {
   LikesList: undefined;
   LikeProfile: { userId: string };
-};
-
-export type ChatStackParamList = {
-  ChatList: undefined;
-  ChatThread: { conversationId: string };
 };
 
 export type ExploreStackParamList = {

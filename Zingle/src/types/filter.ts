@@ -1,3 +1,5 @@
+import type { ProfileGender } from './profile';
+
 export enum FilterType {
   DISTANCE = 'distance',
   AGE = 'age',
@@ -33,4 +35,6 @@ export interface FilterOptions {
   hasBio?: boolean;
   onlineNow?: boolean;
   recentlyActive?: boolean;
+  showMe?: ProfileGender[];
+  city?: string;
 }

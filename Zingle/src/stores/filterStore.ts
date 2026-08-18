@@ -1,5 +1,7 @@
 import { create } from 'zustand';
-import type { FilterOptions } from '@types';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { FilterOptions, ProfileGender } from '@types';
 
 interface FilterStoreState {
   filters: FilterOptions;
@@ -18,6 +20,8 @@ export const defaultFilters: FilterOptions = {
   hasBio: false,
   onlineNow: false,
   recentlyActive: false,
+  showMe: [],
+  city: undefined,
 };
 
 const isFiltersActive = (filters: FilterOptions): boolean =>
@@ -27,22 +31,42 @@ const isFiltersActive = (filters: FilterOptions): boolean =>
   Boolean(filters.verifiedOnly) ||
   Boolean(filters.hasBio) ||
   Boolean(filters.onlineNow) ||
-  Boolean(filters.recentlyActive);
+  Boolean(filters.recentlyActive) ||
+  Boolean(filters.showMe && filters.showMe.length > 0);
 
-export const useFilterStore = create<FilterStoreState>((set, get) => ({
-  filters: { ...defaultFilters },
-
-  updateFilters: (newFilters: Partial<FilterOptions>) =>
-    set(state => ({
-      filters: { ...state.filters, ...newFilters },
-    })),
-
-  resetFilters: () =>
-    set({
+export const useFilterStore = create<FilterStoreState>()(
+  persist(
+    (set, get) => ({
       filters: { ...defaultFilters },
+
+      updateFilters: newFilters =>
+        set(state => ({
+          filters: { ...state.filters, ...newFilters },
+        })),
+
+      resetFilters: () =>
+        set({
+          filters: { ...defaultFilters },
+        }),
+
+      applyFilters: () => {},
+
+      hasActiveFilters: () => isFiltersActive(get().filters),
     }),
+    {
+      name: 'zingle-filters-v1',
+      storage: createJSONStorage(() => AsyncStorage),
+    },
+  ),
+);
 
-  applyFilters: () => {},
-
-  hasActiveFilters: () => isFiltersActive(get().filters),
-}));
+export const showMeLabel = (showMe?: ProfileGender[]): string => {
+  if (!showMe || showMe.length === 0) return 'Everyone';
+  const labels: Record<ProfileGender, string> = {
+    male: 'Men',
+    female: 'Women',
+    'non-binary': 'Non-binary',
+    other: 'More',
+  };
+  return showMe.map(id => labels[id]).join(', ');
+};

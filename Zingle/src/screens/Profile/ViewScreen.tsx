@@ -824,6 +824,9 @@ export const ProfileScreen: React.FC = () => {
         onOpenBlocked={() =>
           chainFromSettings(() => navigation.navigate('BlockedAccounts'))
         }
+        onOpenLegal={document =>
+          chainFromSettings(() => navigation.navigate('Legal', { document }))
+        }
         onLogout={() => chainFromSettings(logout)}
         onDeleteAccount={() =>
           chainFromSettings(() => navigation.navigate('DeleteAccount'))

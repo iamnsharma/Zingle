@@ -10,10 +10,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import type { LikesStackNavigationProp } from '@types';
-import { useThemeStore } from '@stores';
+import { useThemeStore, useMatchStore, useSafetyStore } from '@stores';
 import { metrics } from '@styling/metrics';
 import { BaseText, SafeAreaContainer } from '@components/atoms';
-import { MOCK_LIKES } from '@services/mock/data';
+import { EmptyState } from '@components/molecules';
 import type { UserLike } from '@types';
 
 const styles = StyleSheet.create({
@@ -139,16 +139,19 @@ const LikeCard: React.FC<LikeCardProps> = ({ like, onPress }) => {
 export const LikesScreen: React.FC = () => {
   const { theme } = useThemeStore();
   const navigation = useNavigation<LikesStackNavigationProp>();
+  const likes = useMatchStore(state => state.likes);
+  const blockedIds = useSafetyStore(state => state.blockedIds);
+  const visibleLikes = likes.filter(like => !blockedIds.includes(like.userId));
 
-  const superlikeCount = MOCK_LIKES.filter(l => l.type === 'superlike').length;
+  const superlikeCount = visibleLikes.filter(l => l.type === 'superlike').length;
 
   const handleProfilePress = (userId: string) => {
     navigation.navigate('LikeProfile', { userId });
   };
 
   const renderLikeItem = ({ index }: { index: number }) => {
-    const left = MOCK_LIKES[index];
-    const right = MOCK_LIKES[index + 1];
+    const left = visibleLikes[index];
+    const right = visibleLikes[index + 1];
 
     return (
       <View style={styles.gridRow}>
@@ -162,26 +165,22 @@ export const LikesScreen: React.FC = () => {
     );
   };
 
-  if (MOCK_LIKES.length === 0) {
+  if (visibleLikes.length === 0) {
     return (
-      <SafeAreaContainer>
+      <SafeAreaContainer style={styles.container}>
         <View style={styles.header}>
           <BaseText variant="h1" color={theme.custom.text} style={styles.title} children="Likes" />
         </View>
-        <View style={styles.emptyContainer}>
-          <MaterialCommunityIcons name="star-four-points-outline" size={64} color={theme.custom.textTertiary} />
-          <BaseText variant="h2" color={theme.custom.text} children="No likes yet" />
-          <BaseText
-            variant="body"
-            color={theme.custom.textSecondary}
-            children="Keep swiping — your admirers will show up here"
-          />
-        </View>
+        <EmptyState
+          icon="heart-outline"
+          title="No likes yet"
+          subtitle="When someone likes you, they'll show up here."
+        />
       </SafeAreaContainer>
     );
   }
 
-  const evenIndices = MOCK_LIKES.map((_, i) => i).filter(i => i % 2 === 0);
+  const evenIndices = visibleLikes.map((_, i) => i).filter(i => i % 2 === 0);
 
   return (
     <SafeAreaContainer style={styles.container}>
@@ -191,12 +190,12 @@ export const LikesScreen: React.FC = () => {
           variant="body"
           color={theme.custom.textSecondary}
           style={styles.subtitle}
-          children={`${MOCK_LIKES.length} people liked you`}
+          children={`${visibleLikes.length} people liked you`}
         />
         <View style={styles.statsRow}>
           <View style={[styles.statPill, { backgroundColor: theme.colors.primary + '18' }]}>
             <MaterialCommunityIcons name="heart" size={16} color={theme.colors.primary} />
-            <BaseText variant="caption" color={theme.colors.primary} children={`${MOCK_LIKES.length} Likes`} />
+            <BaseText variant="caption" color={theme.colors.primary} children={`${visibleLikes.length} Likes`} />
           </View>
           {superlikeCount > 0 && (
             <View style={[styles.statPill, { backgroundColor: theme.colors.tertiary + '22' }]}>

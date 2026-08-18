@@ -5,6 +5,7 @@ import { LandingScreen } from '@screens/Auth/LandingScreen';
 import { LoginScreen } from '@screens/Auth/LoginScreen';
 import { SignupScreen } from '@screens/Auth/SignupScreen';
 import { ForgotPasswordScreen } from '@screens/Auth/ForgotPasswordScreen';
+import { LegalScreen } from '@screens/Settings/LegalScreen';
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
@@ -31,6 +32,7 @@ export const AuthStack = () => {
         name="ForgotPassword"
         component={ForgotPasswordScreen}
       />
+      <Stack.Screen name="Legal" component={LegalScreen} />
     </Stack.Navigator>
   );
 };

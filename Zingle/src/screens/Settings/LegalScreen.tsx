@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { useThemeStore } from '@stores';
-import type { MainAppNavigationProp, MainAppStackParamList } from '@types';
+import type { MainAppNavigationProp } from '@types';
 import { metrics } from '@styling/metrics';
 import { BaseText, SafeAreaContainer } from '@components/atoms';
 import { ScreenHeader } from '@components/molecules';
@@ -22,8 +22,10 @@ const styles = StyleSheet.create({
 export const LegalScreen: React.FC = () => {
   const { theme } = useThemeStore();
   const navigation = useNavigation<MainAppNavigationProp>();
-  const route = useRoute<RouteProp<MainAppStackParamList, 'Legal'>>();
-  const doc = LEGAL_DOCUMENTS[route.params.document];
+  const params = useRoute().params as
+    | { document?: 'terms' | 'privacy' | 'guidelines' }
+    | undefined;
+  const doc = LEGAL_DOCUMENTS[params?.document ?? 'terms'];
 
   return (
     <SafeAreaContainer>
