@@ -10,12 +10,9 @@
 - [Setup Instructions](#setup-instructions)
 
 ### 📖 Documentation
-0. **[MVP_PLAN.md](./MVP_PLAN.md)** - What we ship next (mobile first, then backend)
-1. **[PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md)** - Complete project structure & rules
-2. **[SPACING_LAYOUT_GUIDE.md](./SPACING_LAYOUT_GUIDE.md)** - Spacing system (VS, HS, MS)
-3. **[ARCHITECTURE_PATTERNS.md](./ARCHITECTURE_PATTERNS.md)** - Design patterns & data flow
-4. **[THEME_USAGE_GUIDE.md](./THEME_USAGE_GUIDE.md)** - Complete theme system
-5. **[COLORS_QUICK_REFERENCE.md](./COLORS_QUICK_REFERENCE.md)** - Color palette cheat sheet
+- **[context/Frontend.md](./context/Frontend.md)** — frontend done vs starting
+- **[context/BAAS.md](./context/BAAS.md)** — Supabase setup
+- **[MVP_PLAN.md](./MVP_PLAN.md)** — sprint / API contract plan
 
 ---
 
@@ -96,13 +93,9 @@ Zingle/
 ├── metro.config.js              ← Metro bundler config
 ├── android/                     ← Android native code
 │
-└── docs/                        ← Complete documentation
-    ├── PROJECT_DOCUMENTATION.md
-    ├── SPACING_LAYOUT_GUIDE.md
-    ├── ARCHITECTURE_PATTERNS.md
-    ├── THEME_USAGE_GUIDE.md
-    ├── COLORS_QUICK_REFERENCE.md
-    └── README.md (this file)
+└── context/                     ← Product + BaaS context
+    ├── Frontend.md
+    └── BAAS.md
 ```
 
 ---
@@ -196,7 +189,7 @@ width: metrics.horizontalScale(300)
 height: metrics.verticalScale(200)
 ```
 
-👉 **See [SPACING_LAYOUT_GUIDE.md](./SPACING_LAYOUT_GUIDE.md) for complete guide with 8 examples**
+Use `VS` / `HS` / `MS` from `src/styling` for spacing.
 
 ---
 
@@ -237,7 +230,7 @@ theme.custom.like
 theme.custom.match
 ```
 
-👉 **See [COLORS_QUICK_REFERENCE.md](./COLORS_QUICK_REFERENCE.md) for complete palette**
+Colors live in `src/styling` (theme store).
 
 ---
 
@@ -284,7 +277,7 @@ export const BaseButton = ({ label, email, password, login, logout }) => {
 };
 ```
 
-👉 **See [ARCHITECTURE_PATTERNS.md](./ARCHITECTURE_PATTERNS.md) for detailed patterns**
+Screens call `src/services/api/modules/*` — never import Supabase in screens.
 
 ---
 
@@ -325,49 +318,15 @@ const [isLoading, setIsLoading] = useState(false);
 const { data } = useQuery(['profiles'], getProfiles);
 ```
 
-👉 **See [PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md) for complete rules**
+See [context/Frontend.md](./context/Frontend.md) for current product status.
 
 ---
 
-## 🎯 Key Documentation Files
+## 🎯 Key documentation
 
-### 1. PROJECT_DOCUMENTATION.md
-- Complete project overview
-- Detailed folder structure
-- All architectural rules
-- Naming conventions
-- Code quality standards
-
-### 2. SPACING_LAYOUT_GUIDE.md
-- VS, HS, MS abbreviations explained
-- Spacing scale (xs-4xl)
-- 8 complete examples with screenshots
-- Responsive scaling guide
-- Quick copy-paste blocks
-
-### 3. ARCHITECTURE_PATTERNS.md
-- Layered architecture diagram
-- Atomic design system
-- Data flow explanation
-- State management strategy
-- Design patterns (Container, Custom Hooks, etc.)
-- Error handling
-- Testing strategy
-
-### 4. THEME_USAGE_GUIDE.md
-- How to access theme colors
-- Material Design 3 vs custom colors
-- Light vs dark mode
-- Tinder feature colors
-- Best practices
-- Troubleshooting
-
-### 5. COLORS_QUICK_REFERENCE.md
-- Complete color palette
-- Quick usage examples
-- Text hierarchy
-- Status colors
-- Copy-paste blocks
+- **[context/Frontend.md](./context/Frontend.md)** — Track A done, Track B (Supabase) starting
+- **[context/BAAS.md](./context/BAAS.md)** — env, keys, how screens will talk to BaaS
+- **[MVP_PLAN.md](./MVP_PLAN.md)** — sprint order and API contracts
 
 ---
 
@@ -508,12 +467,10 @@ yarn android
 - [Zustand](https://github.com/pmndrs/zustand)
 - [Supabase](https://supabase.com/docs)
 
-### Internal Documentation
-1. PROJECT_DOCUMENTATION.md - Architecture & structure
-2. SPACING_LAYOUT_GUIDE.md - Layout system
-3. ARCHITECTURE_PATTERNS.md - Design patterns
-4. THEME_USAGE_GUIDE.md - Theme system
-5. COLORS_QUICK_REFERENCE.md - Colors
+### Internal
+- [context/Frontend.md](./context/Frontend.md)
+- [context/BAAS.md](./context/BAAS.md)
+- [MVP_PLAN.md](./MVP_PLAN.md)
 
 ---
 
@@ -532,17 +489,11 @@ Before committing:
 
 ---
 
-## 🎓 Learning Path
+## 🎓 Start here
 
-1. **Start Here**: Read [PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md)
-2. **Understand Layout**: Study [SPACING_LAYOUT_GUIDE.md](./SPACING_LAYOUT_GUIDE.md)
-3. **Learn Patterns**: Review [ARCHITECTURE_PATTERNS.md](./ARCHITECTURE_PATTERNS.md)
-4. **Master Theme**: Explore [THEME_USAGE_GUIDE.md](./THEME_USAGE_GUIDE.md)
-5. **Use Colors**: Reference [COLORS_QUICK_REFERENCE.md](./COLORS_QUICK_REFERENCE.md)
-6. **Build Components**: Create atoms, molecules, organisms
-7. **Create Screens**: Combine components into screens
-8. **Connect Data**: Integrate with API services
-9. **Test**: Verify on Android device
+1. [context/Frontend.md](./context/Frontend.md) — current status
+2. [context/BAAS.md](./context/BAAS.md) — Supabase setup
+3. [MVP_PLAN.md](./MVP_PLAN.md) — what to implement next
 
 ---
 
@@ -552,7 +503,7 @@ Before committing:
 - [ ] Set up development environment
 - [ ] Run `yarn start` and `yarn android`
 - [ ] Verify app runs on device
-- [ ] Read PROJECT_DOCUMENTATION.md
+- [ ] Read [context/Frontend.md](./context/Frontend.md)
 
 ### Short Term (Week 1)
 - [ ] Create first custom molecule
@@ -608,8 +559,7 @@ Built with ❤️ following best practices from:
 ---
 
 ## Quick Links
-- [Start Development](#setup-instructions)
-- [View Architecture](./ARCHITECTURE_PATTERNS.md)
-- [Spacing Guide](./SPACING_LAYOUT_GUIDE.md)
-- [Colors Palette](./COLORS_QUICK_REFERENCE.md)
-- [Theme System](./THEME_USAGE_GUIDE.md)
+- [Setup](#setup-instructions)
+- [Frontend status](./context/Frontend.md)
+- [BaaS / Supabase](./context/BAAS.md)
+- [Sprint plan](./MVP_PLAN.md)
