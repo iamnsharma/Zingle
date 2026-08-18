@@ -25,11 +25,9 @@ import {
   GradientButton,
   InterestChip,
 } from '@components/atoms';
-import {
-  AgeSelectorSheet,
-  HeightSelectorSheet,
-  CitySelectorSheet,
-} from '@components/molecules';
+import { AgeSelectorSheet } from '../AgeSelectorSheet';
+import { HeightSelectorSheet } from '../HeightSelectorSheet';
+import { CitySelectorSheet } from '../CitySelectorSheet';
 import { SheetBlurBackdrop, SheetDismissLayer } from '../SheetBlurBackdrop';
 import { INTERESTS, GENDER_OPTIONS, MIN_INTERESTS } from '@constants/onboarding';
 import {

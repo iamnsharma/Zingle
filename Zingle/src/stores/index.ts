@@ -6,4 +6,5 @@ export { useFilterStore } from './filterStore';
 export { useMatchStore } from './matchStore';
 export { useChatStore } from './chatStore';
 export { useMembershipStore, selectIsPremium } from './membershipStore';
+export { useSafetyStore } from './safetyStore';
 

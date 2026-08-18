@@ -22,6 +22,8 @@ import { SheetBlurBackdrop, SheetDismissLayer } from '../SheetBlurBackdrop';
 interface SafetyPrivacyBottomSheetProps {
   visible: boolean;
   onClose: () => void;
+  onOpenBlocked?: () => void;
+  onOpenReport?: () => void;
 }
 
 const DISMISS_THRESHOLD = 120;
@@ -29,13 +31,14 @@ const DISMISS_THRESHOLD = 120;
 interface InfoRowProps {
   icon: string;
   label: string;
+  onPress?: () => void;
 }
 
-const InfoRow: React.FC<InfoRowProps> = ({ icon, label }) => {
+const InfoRow: React.FC<InfoRowProps> = ({ icon, label, onPress }) => {
   const { theme } = useThemeStore();
 
   return (
-    <TouchableOpacity style={styles.infoRow} activeOpacity={0.7}>
+    <TouchableOpacity style={styles.infoRow} activeOpacity={0.7} onPress={onPress}>
       <MaterialCommunityIcons
         name={icon}
         size={22}
@@ -59,6 +62,8 @@ const InfoRow: React.FC<InfoRowProps> = ({ icon, label }) => {
 export const SafetyPrivacyBottomSheet: React.FC<SafetyPrivacyBottomSheetProps> = ({
   visible,
   onClose,
+  onOpenBlocked,
+  onOpenReport,
 }) => {
   const { theme } = useThemeStore();
   const insets = useSafeAreaInsets();
@@ -322,14 +327,22 @@ export const SafetyPrivacyBottomSheet: React.FC<SafetyPrivacyBottomSheetProps> =
                 },
               ]}
             >
-              <InfoRow icon="account-cancel-outline" label="Block list" />
+              <InfoRow
+                icon="account-cancel-outline"
+                label="Block list"
+                onPress={() => closeSheet(onOpenBlocked)}
+              />
               <View
                 style={[
                   styles.infoDivider,
                   { backgroundColor: theme.custom.border },
                 ]}
               />
-              <InfoRow icon="flag-outline" label="Report a problem" />
+              <InfoRow
+                icon="flag-outline"
+                label="Report a problem"
+                onPress={() => closeSheet(onOpenReport)}
+              />
             </View>
           </ScrollView>
 

@@ -5,6 +5,10 @@ import { useOnboardingStore } from '@stores/onboardingStore';
 import { BottomTabNavigator } from '../BottomTabNavigator';
 import { OnboardingContainer } from '@screens/Onboarding';
 import { EditProfileScreen } from '@screens/Profile/EditProfileScreen';
+import { DeleteAccountScreen } from '@screens/Settings/DeleteAccountScreen';
+import { HelpSupportScreen } from '@screens/Settings/HelpSupportScreen';
+import { BlockedAccountsScreen } from '@screens/Settings/BlockedAccountsScreen';
+import { LegalScreen } from '@screens/Settings/LegalScreen';
 
 const Stack = createNativeStackNavigator<MainAppStackParamList>();
 
@@ -22,6 +26,14 @@ export const MainAppStack = () => {
         component={EditProfileScreen}
         options={{ headerShown: false, presentation: 'modal' }}
       />
+      <Stack.Screen
+        name="DeleteAccount"
+        component={DeleteAccountScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
+      <Stack.Screen name="BlockedAccounts" component={BlockedAccountsScreen} />
+      <Stack.Screen name="Legal" component={LegalScreen} />
       <Stack.Screen name="Onboarding">
         {({ navigation }) => (
           <OnboardingContainer

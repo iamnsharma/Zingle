@@ -10,6 +10,7 @@
 - [Setup Instructions](#setup-instructions)
 
 ### 📖 Documentation
+0. **[MVP_PLAN.md](./MVP_PLAN.md)** - What we ship next (mobile first, then backend)
 1. **[PROJECT_DOCUMENTATION.md](./PROJECT_DOCUMENTATION.md)** - Complete project structure & rules
 2. **[SPACING_LAYOUT_GUIDE.md](./SPACING_LAYOUT_GUIDE.md)** - Spacing system (VS, HS, MS)
 3. **[ARCHITECTURE_PATTERNS.md](./ARCHITECTURE_PATTERNS.md)** - Design patterns & data flow

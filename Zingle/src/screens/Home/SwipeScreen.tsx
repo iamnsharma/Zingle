@@ -21,9 +21,8 @@ import { BaseText } from '@components/atoms';
 import {
   AnimatedSwipeCard,
   FilterBottomSheet,
-  BoostBottomSheet,
-  PaywallBottomSheet,
-  type PaywallReason,
+  BottomSheet,
+  EmptyState,
 } from '@components/molecules';
 import { hexToRgba } from '@utils/colorUtils';
 import { MOCK_PROFILES } from '@services/mock/data';
@@ -42,7 +41,6 @@ const ACTION = {
   pass: { color: '#FF4458', icon: 'close' as const, size: 26 },
   superlike: { color: '#0099FF', icon: 'star-four-points' as const, size: 24 },
   like: { color: '#FF4458', icon: 'heart' as const, size: 26 },
-  boost: { color: '#9B59B6', icon: 'flash' as const, size: 24 },
 };
 
 const styles = StyleSheet.create({
@@ -241,21 +239,15 @@ export const HomeScreen: React.FC = () => {
   const { setProfiles } = useMatchStore();
   const { hasActiveFilters, resetFilters } = useFilterStore();
   const glassEnabled = useProfileStore(state => state.appSettings.liquidGlass);
-  const boosts = useMembershipStore(state => state.boosts);
   const consumeLike = useMembershipStore(state => state.consumeLike);
   const consumeSuperLike = useMembershipStore(state => state.consumeSuperLike);
-  const consumeBoost = useMembershipStore(state => state.consumeBoost);
-  const purchaseBoosts = useMembershipStore(state => state.purchaseBoosts);
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [profiles] = useState(MOCK_PROFILES);
   const [filterOpen, setFilterOpen] = useState(false);
-  const [boostOpen, setBoostOpen] = useState(false);
-  const [paywall, setPaywall] = useState<{ visible: boolean; reason: PaywallReason }>(
-    { visible: false, reason: 'likes' },
-  );
+  const [limitOpen, setLimitOpen] = useState<'likes' | 'superLikes' | null>(null);
 
   const panX = useRef(new Animated.Value(0)).current;
   const panY = useRef(new Animated.Value(0)).current;
@@ -345,30 +337,25 @@ export const HomeScreen: React.FC = () => {
     ]).start();
   }, [panX, panY]);
 
-  const openPaywall = useCallback((reason: PaywallReason) => {
-    setPaywall({ visible: true, reason });
-  }, []);
-
   const handlePass = useCallback(() => completeSwipe('pass'), [completeSwipe]);
 
   const handleLike = useCallback(() => {
-    // Free/pass action costs nothing; a Like consumes inventory unless unlimited.
     if (consumeLike()) {
       completeSwipe('like');
     } else {
       snapBack();
-      openPaywall('likes');
+      setLimitOpen('likes');
     }
-  }, [consumeLike, completeSwipe, snapBack, openPaywall]);
+  }, [consumeLike, completeSwipe, snapBack]);
 
   const handleSuperLike = useCallback(() => {
     if (consumeSuperLike()) {
       completeSwipe('superlike');
     } else {
       snapBack();
-      openPaywall('superLikes');
+      setLimitOpen('superLikes');
     }
-  }, [consumeSuperLike, completeSwipe, snapBack, openPaywall]);
+  }, [consumeSuperLike, completeSwipe, snapBack]);
 
   const panResponder = useMemo(
     () =>
@@ -554,12 +541,6 @@ export const HomeScreen: React.FC = () => {
   const superInactive = panY.interpolate({
     inputRange: [-SWIPE_THRESHOLD, -SWIPE_THRESHOLD * 0.2, 0],
     outputRange: [1, 0.55, 0.55],
-    extrapolate: 'clamp',
-  });
-
-  const boostInactive = panY.interpolate({
-    inputRange: [-SWIPE_THRESHOLD * 0.2, 0],
-    outputRange: [0.45, 1],
     extrapolate: 'clamp',
   });
 
@@ -753,55 +734,21 @@ export const HomeScreen: React.FC = () => {
           glass={glassEnabled}
           onPress={handleLike}
         />
-        <Animated.View style={[styles.actionButtonOuter, { opacity: boostInactive }]}>
-          <TouchableOpacity
-            style={[
-              styles.actionButton,
-              glassEnabled
-                ? [
-                    styles.actionButtonGlass,
-                    {
-                      backgroundColor: hexToRgba(ACTION.boost.color, 0.12),
-                      borderColor: hexToRgba(ACTION.boost.color, 0.4),
-                    },
-                  ]
-                : { borderColor: '#9B59B6' },
-            ]}
-            activeOpacity={0.85}
-            onPress={() => setBoostOpen(true)}
-          >
-            {glassEnabled ? (
-              <LinearGradient
-                colors={['rgba(255,255,255,0.55)', 'rgba(255,255,255,0.08)', 'rgba(255,255,255,0.02)']}
-                locations={[0, 0.55, 1]}
-                start={{ x: 0.15, y: 0 }}
-                end={{ x: 0.85, y: 1 }}
-                style={styles.glassSheen}
-                pointerEvents="none"
-              />
-            ) : null}
-            <MaterialCommunityIcons
-              name={ACTION.boost.icon}
-              size={ACTION.boost.size}
-              color={ACTION.boost.color}
-            />
-          </TouchableOpacity>
-        </Animated.View>
       </View>
 
       <FilterBottomSheet visible={filterOpen} onClose={() => setFilterOpen(false)} />
-      <BoostBottomSheet
-        visible={boostOpen}
-        boostsAvailable={boosts}
-        onClose={() => setBoostOpen(false)}
-        onBoostNow={consumeBoost}
-        onPurchase={pkg => purchaseBoosts(pkg.count)}
-      />
-      <PaywallBottomSheet
-        visible={paywall.visible}
-        reason={paywall.reason}
-        onClose={() => setPaywall(prev => ({ ...prev, visible: false }))}
-      />
+      <BottomSheet
+        visible={limitOpen !== null}
+        onClose={() => setLimitOpen(null)}
+        title={limitOpen === 'superLikes' ? "You're out of Super Likes" : "You're out of Likes"}
+        heightRatio={0.42}
+      >
+        <EmptyState
+          icon={limitOpen === 'superLikes' ? 'star-four-points-outline' : 'heart-outline'}
+          title="That's all for now"
+          subtitle="Zingle is free for now. Keep passing, or come back later."
+        />
+      </BottomSheet>
     </SafeAreaView>
   );
 };

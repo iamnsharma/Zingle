@@ -162,7 +162,7 @@ export const BaseInput = React.forwardRef<TextInput, BaseInputProps>(
         {error && (
           <BaseText
             variant="bodySm"
-            color={theme.colors.error}
+            color={isAuth ? '#FFB4B4' : theme.colors.error}
             style={styles.errorText}
             children={error}
           />

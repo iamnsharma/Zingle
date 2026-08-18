@@ -9,15 +9,16 @@ import {
   Platform,
   Keyboard,
   KeyboardEvent,
+  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { ChatStackNavigationProp, ChatStackParamList } from '@types';
-import { useThemeStore } from '@stores';
+import { useThemeStore, useSafetyStore } from '@stores';
 import { metrics } from '@styling/metrics';
 import { BaseText, ProfileAvatar, SafeAreaContainer } from '@components/atoms';
-import { ChatBubble, AttachmentSheet } from '@components/molecules';
+import { ChatBubble, UserActionsSheet, ReportBottomSheet } from '@components/molecules';
 import {
   getConversationById,
   getOtherUserId,
@@ -136,7 +137,8 @@ export const ChatThreadScreen: React.FC = () => {
   const [draft, setDraft] = useState('');
   const [showTyping, setShowTyping] = useState(false);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
-  const [attachOpen, setAttachOpen] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [localMessages, setLocalMessages] = useState<Message[]>(() =>
     getMessagesForConversation(conversationId),
   );
@@ -231,11 +233,6 @@ export const ChatThreadScreen: React.FC = () => {
     appendMessage(draft);
   }, [appendMessage, draft]);
 
-  const openAttachments = useCallback(() => {
-    Keyboard.dismiss();
-    setAttachOpen(true);
-  }, []);
-
   if (!conversation || !profile) {
     return (
       <SafeAreaContainer>
@@ -321,6 +318,13 @@ export const ChatThreadScreen: React.FC = () => {
             children={statusText}
           />
         </View>
+        <TouchableOpacity style={styles.backBtn} onPress={() => setActionsOpen(true)}>
+          <MaterialCommunityIcons
+            name="dots-horizontal"
+            size={24}
+            color={theme.custom.text}
+          />
+        </TouchableOpacity>
       </View>
 
       <Animated.View style={[styles.body, { paddingBottom: kbOffset }]}>
@@ -369,13 +373,6 @@ export const ChatThreadScreen: React.FC = () => {
           ]}
         >
           <View style={styles.inputBar}>
-            <TouchableOpacity style={styles.attachBtn} onPress={openAttachments}>
-              <MaterialCommunityIcons
-                name="plus-circle-outline"
-                size={26}
-                color={theme.custom.textSecondary}
-              />
-            </TouchableOpacity>
             <View
               style={[
                 styles.inputWrap,
@@ -415,9 +412,23 @@ export const ChatThreadScreen: React.FC = () => {
         </View>
       </Animated.View>
 
-      <AttachmentSheet
-        visible={attachOpen}
-        onClose={() => setAttachOpen(false)}
+      <UserActionsSheet
+        visible={actionsOpen}
+        userName={profile.name}
+        onClose={() => setActionsOpen(false)}
+        onReport={() => setReportOpen(true)}
+        onBlock={() => {
+          useSafetyStore.getState().blockUser(profile.id);
+          navigation.goBack();
+        }}
+      />
+      <ReportBottomSheet
+        visible={reportOpen}
+        onClose={() => setReportOpen(false)}
+        onSubmit={() => {
+          setReportOpen(false);
+          Alert.alert('Report submitted', 'Thanks. Our team will review this.');
+        }}
       />
     </SafeAreaContainer>
   );

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Animated,
   PanResponder,
+  Pressable,
   ScrollView,
   useWindowDimensions,
 } from 'react-native';
@@ -25,12 +26,18 @@ interface BottomSheetProps {
   scrollable?: boolean;
   children: React.ReactNode;
   footer?: React.ReactNode;
+  /** Live blur behind the sheet. Age/height/city pickers turn this off. */
+  blurBackdrop?: boolean;
 }
 
 const styles = StyleSheet.create({
   modalRoot: {
     flex: 1,
     justifyContent: 'flex-end',
+  },
+  dimBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.55)',
   },
   sheet: {
     borderTopLeftRadius: metrics.radius['2xl'],
@@ -79,6 +86,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
   scrollable = false,
   children,
   footer,
+  blurBackdrop = true,
 }) => {
   const { theme } = useThemeStore();
   const insets = useSafeAreaInsets();
@@ -177,12 +185,20 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
 
   return (
     <>
-      {visible ? (
+      {visible && blurBackdrop ? (
         <SheetBlurBackdrop opacity={backdropOpacity} placement="underlay" />
       ) : null}
       <Modal transparent visible={visible} animationType="none" statusBarTranslucent>
         <View style={styles.modalRoot} pointerEvents="box-none">
-          <SheetDismissLayer onPress={() => closeSheet()} />
+          {blurBackdrop ? (
+            <SheetDismissLayer onPress={() => closeSheet()} />
+          ) : (
+            <Pressable style={StyleSheet.absoluteFill} onPress={() => closeSheet()}>
+              <Animated.View
+                style={[styles.dimBackdrop, { opacity: backdropOpacity }]}
+              />
+            </Pressable>
+          )}
 
           <Animated.View
             style={[

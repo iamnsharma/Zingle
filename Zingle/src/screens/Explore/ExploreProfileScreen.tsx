@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, Alert } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { ExploreStackNavigationProp, ExploreStackParamList } from '@types';
-import { useThemeStore } from '@stores';
+import { useThemeStore, useSafetyStore } from '@stores';
 import { metrics } from '@styling/metrics';
 import { BaseText, SafeAreaContainer } from '@components/atoms';
 import {
   ProfileScrollHero,
   ExploreActionFooter,
+  UserActionsSheet,
+  ReportBottomSheet,
 } from '@components/molecules';
 import { getProfileById } from '@services/mock/data';
 import { getExploreCategoryById } from '@constants/explore';
@@ -68,6 +70,8 @@ export const ExploreProfileScreen: React.FC = () => {
   const { userId, categoryId } = route.params;
 
   const [atBottom, setAtBottom] = useState(false);
+  const [actionsOpen, setActionsOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
 
   const profile = getProfileById(userId);
   const category = getExploreCategoryById(categoryId);
@@ -100,7 +104,7 @@ export const ExploreProfileScreen: React.FC = () => {
         verified={profile.verified}
         heroBadge={heroBadge}
         onBack={() => navigation.goBack()}
-        onShare={() => {}}
+        onMore={() => setActionsOpen(true)}
         onNearBottomChange={setAtBottom}
       >
         {profile.location?.city ? (
@@ -170,6 +174,24 @@ export const ExploreProfileScreen: React.FC = () => {
         revealed={atBottom}
         onLike={() => navigation.goBack()}
         onPass={() => navigation.goBack()}
+      />
+      <UserActionsSheet
+        visible={actionsOpen}
+        userName={profile.name}
+        onClose={() => setActionsOpen(false)}
+        onReport={() => setReportOpen(true)}
+        onBlock={() => {
+          useSafetyStore.getState().blockUser(profile.id);
+          navigation.goBack();
+        }}
+      />
+      <ReportBottomSheet
+        visible={reportOpen}
+        onClose={() => setReportOpen(false)}
+        onSubmit={() => {
+          setReportOpen(false);
+          Alert.alert('Report submitted', 'Thanks. Our team will review this.');
+        }}
       />
     </SafeAreaContainer>
   );

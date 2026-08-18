@@ -1,21 +1,16 @@
 import React from 'react';
-import {
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useThemeStore } from '@stores';
 import type { AuthStackParamList } from '@types';
 import { metrics } from '@styling/metrics';
-import { BaseText, GradientButton, GoogleButton } from '@components/atoms';
+import { BaseText, GradientButton } from '@components/atoms';
 import { AuthBackground } from '@components/molecules';
 
 type LandingScreenProps = NativeStackScreenProps<AuthStackParamList, 'Landing'>;
 
 const styles = StyleSheet.create({
-  gradientOverlay: {
+  overlay: {
     justifyContent: 'space-between',
     paddingVertical: metrics.spacing['2xl'],
   },
@@ -39,7 +34,7 @@ const styles = StyleSheet.create({
   subtitle: {
     textAlign: 'center',
   },
-  buttonContainer: {
+  actions: {
     width: '100%',
     paddingHorizontal: metrics.spacing.lg,
     gap: metrics.spacing.md,
@@ -73,7 +68,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: metrics.spacing.md,
     paddingVertical: metrics.spacing.sm,
   },
-  privacyContainer: {
+  privacy: {
     paddingHorizontal: metrics.spacing.lg,
     paddingVertical: metrics.spacing.sm,
   },
@@ -86,23 +81,10 @@ const styles = StyleSheet.create({
 export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
   const { theme } = useThemeStore();
 
-  const handleGoogleLogin = () => {
-    Alert.alert(
-      'Coming Soon',
-      'Google login will be integrated with backend.',
-      [{ text: 'OK' }]
-    );
-  };
-
   return (
-    <AuthBackground contentStyle={styles.gradientOverlay}>
+    <AuthBackground contentStyle={styles.overlay}>
       <View style={styles.content}>
-        <BaseText
-          variant="h1"
-          color="#FFFFFF"
-          style={styles.logo}
-          children="Zingle"
-        />
+        <BaseText variant="h1" color="#FFFFFF" style={styles.logo} children="Zingle" />
         <BaseText
           variant="h2"
           color="#FFFFFF"
@@ -118,13 +100,12 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
       </View>
 
       <View>
-        <View style={styles.buttonContainer}>
+        <View style={styles.actions}>
           <GradientButton
             label="Create account"
             size="lg"
             onPress={() => navigation.navigate('Signup')}
           />
-          <GoogleButton onPress={handleGoogleLogin} />
         </View>
 
         <View style={styles.divider}>
@@ -150,10 +131,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
             <BaseText variant="body" color="#FFFFFF" children="Sign in" />
           </TouchableOpacity>
           <View
-            style={[
-              styles.dividerVertical,
-              { backgroundColor: theme.custom.glassLight },
-            ]}
+            style={[styles.dividerVertical, { backgroundColor: theme.custom.glassLight }]}
           />
           <TouchableOpacity
             style={styles.footerButton}
@@ -163,7 +141,7 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.privacyContainer}>
+        <View style={styles.privacy}>
           <BaseText
             variant="caption"
             color="rgba(255, 255, 255, 0.55)"

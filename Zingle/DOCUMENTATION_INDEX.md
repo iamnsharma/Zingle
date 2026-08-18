@@ -1,5 +1,13 @@
 # 📚 ZINGLE Documentation Index
 
+## Current product plan
+
+**[MVP_PLAN.md](./MVP_PLAN.md)** — source of truth for what we ship next.
+
+Mobile UI first, backend second. Core loop only: signup → profile → swipe → match → chat → report/block. Older “complete / ready” docs describe UI, not store readiness.
+
+---
+
 ## Complete Documentation Suite
 
 Welcome to the Zingle project documentation! This index helps you navigate all available guides.

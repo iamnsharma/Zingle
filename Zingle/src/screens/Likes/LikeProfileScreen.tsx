@@ -7,14 +7,16 @@ import {
   Image,
   ImageBackground,
   Dimensions,
+  Alert,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { LikesStackNavigationProp, LikesStackParamList } from '@types';
-import { useThemeStore } from '@stores';
+import { useThemeStore, useSafetyStore } from '@stores';
 import { metrics } from '@styling/metrics';
 import { BaseText, GradientButton, SafeAreaContainer } from '@components/atoms';
+import { UserActionsSheet, ReportBottomSheet } from '@components/molecules';
 import { getLikeByUserId, getProfileById } from '@services/mock/data';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -136,6 +138,8 @@ export const LikeProfileScreen: React.FC = () => {
 
   const profile = getProfileById(userId);
   const like = getLikeByUserId(userId);
+  const [actionsOpen, setActionsOpen] = React.useState(false);
+  const [reportOpen, setReportOpen] = React.useState(false);
 
   if (!profile) {
     return (
@@ -166,7 +170,7 @@ export const LikeProfileScreen: React.FC = () => {
             >
               <MaterialCommunityIcons name="chevron-left" size={28} color="#FFF" />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.iconBtn}>
+            <TouchableOpacity style={styles.iconBtn} onPress={() => setActionsOpen(true)}>
               <MaterialCommunityIcons name="dots-horizontal" size={24} color="#FFF" />
             </TouchableOpacity>
           </View>
@@ -292,6 +296,24 @@ export const LikeProfileScreen: React.FC = () => {
           />
         </View>
       </View>
+      <UserActionsSheet
+        visible={actionsOpen}
+        userName={profile.name}
+        onClose={() => setActionsOpen(false)}
+        onReport={() => setReportOpen(true)}
+        onBlock={() => {
+          useSafetyStore.getState().blockUser(profile.id);
+          navigation.goBack();
+        }}
+      />
+      <ReportBottomSheet
+        visible={reportOpen}
+        onClose={() => setReportOpen(false)}
+        onSubmit={() => {
+          setReportOpen(false);
+          Alert.alert('Report submitted', 'Thanks. Our team will review this.');
+        }}
+      />
     </SafeAreaContainer>
   );
 };

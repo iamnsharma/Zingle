@@ -28,6 +28,8 @@ interface MembershipState {
   consumeLike: () => boolean;
   consumeSuperLike: () => boolean;
   consumeBoost: () => boolean;
+  /** Restore free-tier inventory. Used on account delete. */
+  reset: () => void;
 }
 
 export const useMembershipStore = create<MembershipState>()(
@@ -92,9 +94,18 @@ export const useMembershipStore = create<MembershipState>()(
         set({ boosts: boosts - 1 });
         return true;
       },
+
+      reset: () =>
+        set({
+          activePlanId: null,
+          likes: DEFAULT_INVENTORY.likes,
+          superLikes: DEFAULT_INVENTORY.superLikes,
+          boosts: DEFAULT_INVENTORY.boosts,
+        }),
     }),
     {
-      name: 'zingle-membership',
+      // v2 drops locally "purchased" plans so MVP does not pretend IAP happened.
+      name: 'zingle-membership-v2',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: state => ({
         activePlanId: state.activePlanId,

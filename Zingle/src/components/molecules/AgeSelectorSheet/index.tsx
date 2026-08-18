@@ -198,6 +198,7 @@ export const AgeSelectorSheet: React.FC<AgeSelectorSheetProps> = ({
       title="Your age"
       subtitle="You must be 18 or older"
       heightRatio={0.52}
+      blurBackdrop={false}
       footer={
         <GradientButton
           label="Confirm age"

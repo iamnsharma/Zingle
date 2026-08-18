@@ -259,6 +259,7 @@ export const HeightSelectorSheet: React.FC<HeightSelectorSheetProps> = ({
       title="Your height"
       subtitle="Slide the scale to select"
       heightRatio={0.54}
+      blurBackdrop={false}
       footer={
         <GradientButton
           label="Confirm height"

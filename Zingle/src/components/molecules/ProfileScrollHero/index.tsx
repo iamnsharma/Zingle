@@ -31,7 +31,7 @@ interface ProfileScrollHeroProps {
   verified?: boolean;
   heroBadge?: React.ReactNode;
   onBack: () => void;
-  onShare?: () => void;
+  onMore?: () => void;
   onNearBottomChange?: (near: boolean) => void;
   children: React.ReactNode;
 }
@@ -46,7 +46,7 @@ export const ProfileScrollHero: React.FC<ProfileScrollHeroProps> = ({
   verified,
   heroBadge,
   onBack,
-  onShare,
+  onMore,
   onNearBottomChange,
   children,
 }) => {
@@ -226,12 +226,12 @@ export const ProfileScrollHero: React.FC<ProfileScrollHeroProps> = ({
         >
           <MaterialCommunityIcons name="chevron-left" size={28} color="#FFF" />
         </TouchableOpacity>
-        {onShare ? (
+        {onMore ? (
           <TouchableOpacity
             style={[styles.iconBtn, { backgroundColor: 'rgba(0,0,0,0.35)' }]}
-            onPress={onShare}
+            onPress={onMore}
           >
-            <MaterialCommunityIcons name="share-variant-outline" size={22} color="#FFF" />
+            <MaterialCommunityIcons name="dots-horizontal" size={22} color="#FFF" />
           </TouchableOpacity>
         ) : (
           <View style={styles.iconBtn} />

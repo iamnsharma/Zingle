@@ -5,6 +5,7 @@ export type AuthStackParamList = {
   Landing: undefined;
   Login: undefined;
   Signup: undefined;
+  ForgotPassword: undefined;
 };
 
 export type MainBottomTabParamList = {
@@ -19,6 +20,10 @@ export type MainAppStackParamList = {
   MainBottomTab: undefined;
   Onboarding: undefined;
   EditProfile: undefined;
+  DeleteAccount: undefined;
+  HelpSupport: undefined;
+  BlockedAccounts: undefined;
+  Legal: { document: 'terms' | 'privacy' | 'guidelines' };
 };
 
 export type LikesStackParamList = {

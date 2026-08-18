@@ -104,6 +104,7 @@ export const CitySelectorSheet: React.FC<CitySelectorSheetProps> = ({
       title="Your city"
       subtitle="Find people near you"
       heightRatio={0.62}
+      blurBackdrop={false}
       footer={
         <GradientButton
           label="Confirm city"

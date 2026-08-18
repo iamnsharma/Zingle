@@ -5,6 +5,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
@@ -18,10 +19,10 @@ import type { MainAppNavigationProp, UserProfile } from '@types';
 import { metrics } from '@styling/metrics';
 import { BaseText, GradientButton, SafeAreaContainer } from '@components/atoms';
 import {
-  VerifiedBottomSheet,
   SafetyPrivacyBottomSheet,
   SettingsBottomSheet,
   ProfileSectionSheet,
+  ReportBottomSheet,
   type ProfileEditSection,
 } from '@components/molecules';
 import {
@@ -364,9 +365,9 @@ export const ProfileScreen: React.FC = () => {
   const { currentUser, setCurrentUser } = useProfileStore();
   const { data: onboardingData, isCompleted } = useOnboardingStore();
   const { logout } = useAuthStore();
-  const [verifiedOpen, setVerifiedOpen] = useState(false);
   const [safetyOpen, setSafetyOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<ProfileEditSection | null>(
     null,
   );
@@ -787,38 +788,6 @@ export const ProfileScreen: React.FC = () => {
           >
           <TouchableOpacity
             style={styles.menuRow}
-            onPress={() => setVerifiedOpen(true)}
-          >
-            <MaterialCommunityIcons
-              name="check-decagram-outline"
-              size={22}
-              color={theme.colors.tertiary}
-            />
-            <View style={styles.menuRowText}>
-              <BaseText
-                variant="body"
-                color={theme.custom.text}
-                children="Get Verified"
-              />
-              <BaseText
-                variant="caption"
-                color={theme.custom.textTertiary}
-                children={
-                  profile.verified ? 'Your profile is verified' : 'Build trust with a badge'
-                }
-              />
-            </View>
-            <MaterialCommunityIcons
-              name="chevron-right"
-              size={22}
-              color={theme.custom.textTertiary}
-            />
-          </TouchableOpacity>
-          <View
-            style={[styles.menuDivider, { backgroundColor: theme.custom.border }]}
-          />
-          <TouchableOpacity
-            style={styles.menuRow}
             onPress={() => setSafetyOpen(true)}
           >
             <MaterialCommunityIcons
@@ -848,9 +817,17 @@ export const ProfileScreen: React.FC = () => {
         visible={settingsOpen}
         onClose={() => setSettingsOpen(false)}
         onOpenSafety={() => chainFromSettings(() => setSafetyOpen(true))}
-        onOpenVerified={() => chainFromSettings(() => setVerifiedOpen(true))}
         onOpenEditProfile={() => chainFromSettings(openEdit)}
+        onOpenHelp={() =>
+          chainFromSettings(() => navigation.navigate('HelpSupport'))
+        }
+        onOpenBlocked={() =>
+          chainFromSettings(() => navigation.navigate('BlockedAccounts'))
+        }
         onLogout={() => chainFromSettings(logout)}
+        onDeleteAccount={() =>
+          chainFromSettings(() => navigation.navigate('DeleteAccount'))
+        }
       />
       <ProfileSectionSheet
         visible={activeSection !== null}
@@ -861,13 +838,19 @@ export const ProfileScreen: React.FC = () => {
           openEdit();
         }}
       />
-      <VerifiedBottomSheet
-        visible={verifiedOpen}
-        onClose={() => setVerifiedOpen(false)}
-      />
       <SafetyPrivacyBottomSheet
         visible={safetyOpen}
         onClose={() => setSafetyOpen(false)}
+        onOpenBlocked={() => navigation.navigate('BlockedAccounts')}
+        onOpenReport={() => setReportOpen(true)}
+      />
+      <ReportBottomSheet
+        visible={reportOpen}
+        onClose={() => setReportOpen(false)}
+        onSubmit={() => {
+          setReportOpen(false);
+          Alert.alert('Report submitted', 'Thanks. Our team will review this.');
+        }}
       />
     </SafeAreaContainer>
   );
