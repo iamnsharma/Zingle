@@ -404,7 +404,7 @@ export const ProfileScreen: React.FC = () => {
   return (
     <SafeAreaContainer style={styles.container}>
       <View style={styles.topBar}>
-        <BaseText variant="h2" color={theme.custom.text} children="Profile" />
+        <BaseText variant="display" color={theme.custom.text} children="Profile" />
         <View style={styles.topBarActions}>
           <TouchableOpacity
             style={[

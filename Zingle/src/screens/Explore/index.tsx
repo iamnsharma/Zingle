@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
     paddingVertical: metrics.spacing.md,
   },
   title: {
+    fontSize: 30,
     marginBottom: metrics.spacing.xs,
   },
   subtitle: {
@@ -167,7 +168,7 @@ export const ExploreScreen: React.FC = () => {
     <SafeAreaContainer style={styles.container}>
       <View style={styles.header}>
         <BaseText
-          variant="h1"
+          variant="display"
           color={theme.custom.text}
           style={styles.title}
           children="Explore"

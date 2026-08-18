@@ -10,6 +10,7 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useThemeStore } from '@stores';
 import { metrics } from '@styling/metrics';
+import { Fonts } from '@styling/globalStyles/typography';
 import { BaseText, GradientButton } from '@components/atoms';
 import { BottomSheet } from '../BottomSheet';
 import { AGE_MIN, AGE_MAX } from '@constants/pickers';
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
   },
   counterNumber: {
     fontSize: 48,
-    fontWeight: '800',
+    fontFamily: Fonts.semibold,
     letterSpacing: -2,
   },
   wheelWrap: {

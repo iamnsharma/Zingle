@@ -28,7 +28,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 36,
-    fontWeight: '800',
     letterSpacing: -1,
     textAlign: 'center',
     marginBottom: metrics.spacing.sm,
@@ -97,7 +96,7 @@ export const ItsAMatchModal: React.FC<ItsAMatchModalProps> = ({
           ]}
         >
           <BaseText
-            variant="h1"
+            variant="display"
             color="#FFFFFF"
             style={styles.title}
             children="It's a Match!"

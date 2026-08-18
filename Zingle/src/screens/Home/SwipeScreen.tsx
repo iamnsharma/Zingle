@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: metrics.spacing.lg,
     paddingVertical: metrics.spacing.sm,
   },
-  logo: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5 },
+  logo: { fontSize: 28, letterSpacing: -0.5 },
   headerActions: { flexDirection: 'row', alignItems: 'center', gap: metrics.spacing.sm },
   filterButton: { padding: metrics.spacing.xs, position: 'relative' },
   filterBadge: {
@@ -585,7 +585,7 @@ export const HomeScreen: React.FC = () => {
         edges={['top']}
       >
         <View style={styles.header}>
-          <BaseText variant="h2" color={theme.colors.primary} style={styles.logo} children="Zingle" />
+          <BaseText variant="display" color={theme.colors.primary} style={styles.logo} children="Zingle" />
           <View style={styles.headerActions}>
             <TouchableOpacity style={styles.filterButton} onPress={handleFilterPress}>
               <MaterialCommunityIcons name="tune-variant" size={26} color={theme.custom.textSecondary} />
@@ -612,7 +612,7 @@ export const HomeScreen: React.FC = () => {
       edges={['top']}
     >
       <View style={styles.header}>
-        <BaseText variant="h2" color={theme.colors.primary} style={styles.logo} children="Zingle" />
+        <BaseText variant="display" color={theme.colors.primary} style={styles.logo} children="Zingle" />
         <View style={styles.headerActions}>
           <TouchableOpacity
             style={styles.filterButton}

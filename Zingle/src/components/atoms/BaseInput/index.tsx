@@ -10,6 +10,7 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useThemeStore } from '@stores';
 import { metrics } from '@styling/metrics';
+import { Fonts } from '@styling/globalStyles/typography';
 import { BaseText } from '../BaseText';
 
 interface BaseInputProps extends TextInputProps {
@@ -25,7 +26,7 @@ const styles = StyleSheet.create({
     marginBottom: metrics.spacing.lg,
   },
   authContainer: {
-    marginBottom: metrics.spacing.md,
+    marginBottom: 0,
   },
   label: {
     marginBottom: metrics.spacing.sm,
@@ -40,20 +41,23 @@ const styles = StyleSheet.create({
   authInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderBottomWidth: 1,
-    paddingHorizontal: 0,
-    paddingVertical: metrics.spacing.sm,
+    borderRadius: metrics.radius.xl,
+    borderWidth: 1.5,
+    paddingHorizontal: metrics.spacing.lg,
+    minHeight: 56,
   },
   input: {
     flex: 1,
     paddingVertical: metrics.spacing.md,
     fontSize: 16,
+    fontFamily: Fonts.regular,
   },
   authInput: {
     flex: 1,
-    paddingVertical: metrics.spacing.sm,
-    fontSize: 18,
-    fontWeight: '400',
+    paddingVertical: 16,
+    fontSize: 16,
+    fontFamily: Fonts.regular,
+    includeFontPadding: false,
   },
   errorText: {
     marginTop: metrics.spacing.sm,
@@ -87,10 +91,8 @@ export const BaseInput = React.forwardRef<TextInput, BaseInputProps>(
 
     const containerStyle: ViewStyle = isAuth
       ? {
-          borderBottomColor: error
-            ? theme.colors.error
-            : 'rgba(255, 255, 255, 0.6)',
-          backgroundColor: 'transparent',
+          borderColor: error ? '#FFFFFF' : 'transparent',
+          backgroundColor: '#FFFFFF',
         }
       : {
           borderColor: error ? theme.colors.error : theme.colors.outline,
@@ -98,11 +100,11 @@ export const BaseInput = React.forwardRef<TextInput, BaseInputProps>(
         };
 
     const placeholderTextColor: string = isAuth
-      ? 'rgba(255, 255, 255, 0.5)'
+      ? 'rgba(0, 0, 0, 0.38)'
       : theme.custom.textTertiary;
-    const selectionColor: string = isAuth ? '#FFFFFF' : theme.colors.primary;
-    const cursorColor: string = isAuth ? '#FFFFFF' : theme.colors.primary;
-    const inputTextColor: string = isAuth ? '#FFFFFF' : theme.custom.text;
+    const selectionColor = theme.colors.primary;
+    const cursorColor = theme.colors.primary;
+    const inputTextColor: string = isAuth ? '#111111' : theme.custom.text;
     const isSecure = showPasswordToggle
       ? !passwordVisible
       : secureTextEntry;
@@ -154,7 +156,7 @@ export const BaseInput = React.forwardRef<TextInput, BaseInputProps>(
               <MaterialCommunityIcons
                 name={passwordVisible ? 'eye-off-outline' : 'eye-outline'}
                 size={22}
-                color="rgba(255, 255, 255, 0.7)"
+                color={isAuth ? 'rgba(0, 0, 0, 0.45)' : 'rgba(255, 255, 255, 0.7)'}
               />
             </TouchableOpacity>
           )}
@@ -162,7 +164,7 @@ export const BaseInput = React.forwardRef<TextInput, BaseInputProps>(
         {error && (
           <BaseText
             variant="bodySm"
-            color={isAuth ? '#FFB4B4' : theme.colors.error}
+            color={isAuth ? '#FFFFFF' : theme.colors.error}
             style={styles.errorText}
             children={error}
           />

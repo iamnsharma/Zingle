@@ -13,6 +13,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useThemeStore, useMatchStore, useChatStore } from '@stores';
 import type { MainBottomTabParamList } from '@types';
 import { metrics } from '@styling/metrics';
+import { Fonts } from '@styling/globalStyles/typography';
 import { HomeScreen } from '@screens/Home/SwipeScreen';
 import { ExploreStack } from '@navigation/ExploreStack';
 import { ChatStack } from '@navigation/ChatStack';
@@ -224,7 +225,7 @@ export const BottomTabNavigator = () => {
           tabBarInactiveTintColor: theme.custom.textTertiary,
           tabBarLabelStyle: {
             fontSize: 10,
-            fontWeight: '600',
+            fontFamily: Fonts.semibold,
             marginTop: 0,
             letterSpacing: 0.3,
           },

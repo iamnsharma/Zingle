@@ -55,6 +55,10 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>MaterialCommunityIcons.ttf</string>
+		<string>PPMori-Regular.otf</string>
+		<string>PPMori-SemiBold.otf</string>
+		<string>PPMori-Extralight.otf</string>
+		<string>TickerBit-Regular.otf</string>
 	</array>
 </dict>
 </plist>

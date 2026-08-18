@@ -4,8 +4,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useThemeStore } from '@stores';
 import type { AuthStackParamList } from '@types';
 import { metrics } from '@styling/metrics';
+import { Fonts } from '@styling/globalStyles/typography';
 import { BaseText, GradientButton } from '@components/atoms';
-import { AuthBackground } from '@components/molecules';
+import { AuthBackground, BrandWordmark } from '@components/molecules';
 
 type LandingScreenProps = NativeStackScreenProps<AuthStackParamList, 'Landing'>;
 
@@ -20,19 +21,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: metrics.spacing.lg,
   },
-  logo: {
-    fontSize: 52,
+  wordmark: {
     marginBottom: metrics.spacing.lg,
-    fontWeight: '800',
-    letterSpacing: -1.5,
   },
   tagline: {
     textAlign: 'center',
     marginBottom: metrics.spacing.md,
-    fontWeight: '700',
+    fontSize: 22,
   },
   subtitle: {
     textAlign: 'center',
+    fontFamily: Fonts.extralight,
   },
   actions: {
     width: '100%',
@@ -87,7 +86,9 @@ export const LandingScreen: React.FC<LandingScreenProps> = ({ navigation }) => {
   return (
     <AuthBackground contentStyle={styles.overlay}>
       <View style={styles.content}>
-        <BaseText variant="h1" color="#FFFFFF" style={styles.logo} children="Zingle" />
+        <View style={styles.wordmark}>
+          <BrandWordmark />
+        </View>
         <BaseText
           variant="h2"
           color="#FFFFFF"

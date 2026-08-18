@@ -12,7 +12,7 @@ import { useThemeStore } from '@stores';
 import { queryClient } from '@services/api';
 import { RootNavigator } from '@navigation';
 
-// Initialize i18n
+import '@styling/applyFonts';
 import '@lang';
 
 function App() {

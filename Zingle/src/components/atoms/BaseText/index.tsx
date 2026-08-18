@@ -19,11 +19,7 @@ export const BaseText = React.forwardRef<Text, BaseTextProps>(
       <Text
         ref={ref}
         {...props}
-        style={[
-          // variantStyle,
-          { color: textColor },
-          style,
-        ]}
+        style={[variantStyle, { color: textColor }, style]}
       />
     );
   }

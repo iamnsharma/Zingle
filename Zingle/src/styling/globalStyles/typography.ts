@@ -1,9 +1,19 @@
+/** Same PostScript / file names as Yieldz — works on iOS and Android. */
+export const Fonts = {
+  regular: 'PPMori-Regular',
+  semibold: 'PPMori-SemiBold',
+  extralight: 'PPMori-Extralight',
+  /** Auth wordmark only — do not use elsewhere unless asked. */
+  brand: 'TickerBit-Regular',
+} as const;
+
 export const Typography = {
   fontFamily: {
-    regular: 'System',
-    medium: 'System',
-    bold: 'System',
-    semibold: 'System',
+    regular: Fonts.regular,
+    medium: Fonts.regular,
+    bold: Fonts.semibold,
+    semibold: Fonts.semibold,
+    extralight: Fonts.extralight,
   },
   sizes: {
     xs: 10,
@@ -36,48 +46,53 @@ export const Typography = {
 
 export const textVariants = {
   h1: {
-    fontSize: Typography.sizes['3xl'],  // Reduced from 5xl (32px) to 3xl (24px)
-    fontWeight: Typography.weights.bold,
-    lineHeight: Typography.lineHeights.tight,
+    fontSize: Typography.sizes['3xl'],
+    fontFamily: Fonts.semibold,
+    lineHeight: Typography.sizes['3xl'] * Typography.lineHeights.tight,
   },
   h2: {
-    fontSize: Typography.sizes['2xl'],  // Reduced from 4xl (28px) to 2xl (20px)
-    fontWeight: Typography.weights.bold,
-    lineHeight: Typography.lineHeights.tight,
+    fontSize: Typography.sizes['2xl'],
+    fontFamily: Fonts.semibold,
+    lineHeight: Typography.sizes['2xl'] * Typography.lineHeights.tight,
   },
   h3: {
-    fontSize: Typography.sizes.xl,      // Reduced from 3xl (24px) to xl (18px)
-    fontWeight: Typography.weights.semibold,
-    lineHeight: Typography.lineHeights.tight,
+    fontSize: Typography.sizes.xl,
+    fontFamily: Fonts.semibold,
+    lineHeight: Typography.sizes.xl * Typography.lineHeights.tight,
   },
   h4: {
-    fontSize: Typography.sizes.lg,      // Reduced from 2xl (20px) to lg (16px)
-    fontWeight: Typography.weights.semibold,
-    lineHeight: Typography.lineHeights.normal,
+    fontSize: Typography.sizes.lg,
+    fontFamily: Fonts.semibold,
+    lineHeight: Typography.sizes.lg * Typography.lineHeights.normal,
   },
   body: {
     fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.normal,
-    lineHeight: Typography.lineHeights.relaxed,
+    fontFamily: Fonts.regular,
+    lineHeight: Typography.sizes.base * Typography.lineHeights.relaxed,
   },
   bodyMedium: {
     fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.medium,
-    lineHeight: Typography.lineHeights.relaxed,
+    fontFamily: Fonts.semibold,
+    lineHeight: Typography.sizes.base * Typography.lineHeights.relaxed,
   },
   bodySm: {
     fontSize: Typography.sizes.sm,
-    fontWeight: Typography.weights.normal,
-    lineHeight: Typography.lineHeights.normal,
+    fontFamily: Fonts.regular,
+    lineHeight: Typography.sizes.sm * Typography.lineHeights.normal,
   },
   caption: {
     fontSize: Typography.sizes.xs,
-    fontWeight: Typography.weights.normal,
-    lineHeight: Typography.lineHeights.normal,
+    fontFamily: Fonts.regular,
+    lineHeight: Typography.sizes.xs * Typography.lineHeights.normal,
   },
   button: {
     fontSize: Typography.sizes.base,
-    fontWeight: Typography.weights.semibold,
-    lineHeight: Typography.lineHeights.normal,
+    fontFamily: Fonts.semibold,
+    lineHeight: Typography.sizes.base * Typography.lineHeights.normal,
+  },
+  display: {
+    fontSize: Typography.sizes['5xl'],
+    fontFamily: Fonts.semibold,
+    lineHeight: Typography.sizes['5xl'] * Typography.lineHeights.tight,
   },
 };

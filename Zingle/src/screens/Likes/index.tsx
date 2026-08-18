@@ -25,6 +25,7 @@ const styles = StyleSheet.create({
     paddingVertical: metrics.spacing.md,
   },
   title: {
+    fontSize: 30,
     marginBottom: metrics.spacing.xs,
   },
   subtitle: {
@@ -169,7 +170,7 @@ export const LikesScreen: React.FC = () => {
     return (
       <SafeAreaContainer style={styles.container}>
         <View style={styles.header}>
-          <BaseText variant="h1" color={theme.custom.text} style={styles.title} children="Likes" />
+          <BaseText variant="display" color={theme.custom.text} style={styles.title} children="Likes" />
         </View>
         <EmptyState
           icon="heart-outline"
@@ -185,7 +186,7 @@ export const LikesScreen: React.FC = () => {
   return (
     <SafeAreaContainer style={styles.container}>
       <View style={styles.header}>
-        <BaseText variant="h1" color={theme.custom.text} style={styles.title} children="Likes" />
+        <BaseText variant="display" color={theme.custom.text} style={styles.title} children="Likes" />
         <BaseText
           variant="body"
           color={theme.custom.textSecondary}

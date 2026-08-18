@@ -17,6 +17,7 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import type { ChatStackNavigationProp, ChatStackParamList } from '@types';
 import { useThemeStore, useSafetyStore, useChatStore } from '@stores';
 import { metrics } from '@styling/metrics';
+import { Fonts } from '@styling/globalStyles/typography';
 import { BaseText, ProfileAvatar, SafeAreaContainer } from '@components/atoms';
 import { ChatBubble, UserActionsSheet, ReportBottomSheet, EmptyState } from '@components/molecules';
 import {
@@ -110,6 +111,7 @@ const styles = StyleSheet.create({
     lineHeight: 21,
     maxHeight: 100,
     paddingVertical: Platform.OS === 'ios' ? 10 : 8,
+    fontFamily: Fonts.regular,
   },
   sendBtn: {
     width: 44,

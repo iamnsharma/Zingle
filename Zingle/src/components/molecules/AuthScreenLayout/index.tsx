@@ -4,6 +4,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { metrics } from '@styling/metrics';
 import { BaseText } from '@components/atoms';
 import { AuthBackground } from '../AuthBackground';
+import { BrandWordmark } from '../BrandWordmark';
 
 interface AuthScreenLayoutProps {
   title: string;
@@ -23,25 +24,21 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: metrics.spacing.md,
+    paddingTop: metrics.spacing.sm,
     minHeight: 44,
   },
   backButton: {
     padding: metrics.spacing.xs,
     marginLeft: -metrics.spacing.xs,
+    zIndex: 1,
   },
-  logoWrap: {
-    flex: 1,
+  wordmark: {
     alignItems: 'center',
-    marginRight: 32,
-  },
-  logo: {
-    fontSize: 32,
-    fontWeight: '800',
-    letterSpacing: -1,
+    marginTop: metrics.spacing.md,
+    marginBottom: metrics.spacing.xl,
   },
   formSection: {
-    paddingTop: metrics.spacing['2xl'],
+    paddingTop: metrics.spacing.sm,
   },
   title: {
     marginBottom: metrics.spacing.xs,
@@ -78,12 +75,11 @@ export const AuthScreenLayout: React.FC<AuthScreenLayoutProps> = ({
           >
             <MaterialCommunityIcons name="chevron-left" size={32} color="#FFFFFF" />
           </TouchableOpacity>
-        ) : (
-          <View style={styles.backButton} />
-        )}
-        <View style={styles.logoWrap}>
-          <BaseText variant="h1" color="#FFFFFF" style={styles.logo} children="Zingle" />
-        </View>
+        ) : null}
+      </View>
+
+      <View style={styles.wordmark}>
+        <BrandWordmark />
       </View>
 
       <View style={styles.formSection}>

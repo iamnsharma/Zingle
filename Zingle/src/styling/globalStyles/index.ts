@@ -13,4 +13,4 @@ export {
 
 export { type AppTheme, lightTheme as defaultLightTheme, darkTheme as defaultDarkTheme } from './theme';
 
-export { textVariants } from './typography';
+export { textVariants, Fonts, Typography } from './typography';

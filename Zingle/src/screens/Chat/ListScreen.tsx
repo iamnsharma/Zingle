@@ -12,6 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { ChatStackNavigationProp } from '@types';
 import { useThemeStore, useSafetyStore, useChatStore } from '@stores';
 import { metrics } from '@styling/metrics';
+import { Fonts } from '@styling/globalStyles/typography';
 import { BaseText, ProfileAvatar, SafeAreaContainer } from '@components/atoms';
 import { EmptyState } from '@components/molecules';
 import {
@@ -32,7 +33,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 30,
-    fontWeight: '800',
     marginBottom: metrics.spacing.md,
   },
   searchWrap: {
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     padding: 0,
+    fontFamily: Fonts.regular,
   },
   list: {
     flex: 1,
@@ -230,6 +231,7 @@ export const ChatListScreen: React.FC = () => {
     <SafeAreaContainer style={styles.container}>
       <View style={styles.header}>
         <BaseText
+          variant="display"
           color={theme.custom.text}
           style={styles.title}
           children="Messages"

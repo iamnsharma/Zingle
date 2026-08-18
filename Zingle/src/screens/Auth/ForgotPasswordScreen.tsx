@@ -16,6 +16,9 @@ const styles = StyleSheet.create({
   form: {
     gap: metrics.spacing.md,
   },
+  submit: {
+    marginTop: metrics.spacing.sm,
+  },
 });
 
 export const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
@@ -70,6 +73,7 @@ export const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({
           onPress={handleSubmit}
           disabled={loading}
           loading={loading}
+          style={styles.submit}
         />
       </View>
     </AuthScreenLayout>

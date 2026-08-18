@@ -5,6 +5,7 @@ export { CitySelectorSheet } from './CitySelectorSheet';
 export { AnimatedSwipeCard } from './AnimatedSwipeCard';
 export { AnimatedInterestChip } from './AnimatedInterestChip';
 export { AuthBackground } from './AuthBackground';
+export { BrandWordmark } from './BrandWordmark';
 export { AuthScreenLayout } from './AuthScreenLayout';
 export { AuthFooterLink } from './AuthFooterLink';
 export { ScreenHeader } from './ScreenHeader';

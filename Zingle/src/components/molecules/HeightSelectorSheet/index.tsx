@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useThemeStore } from '@stores';
 import { metrics } from '@styling/metrics';
+import { Fonts } from '@styling/globalStyles/typography';
 import { BaseText, GradientButton } from '@components/atoms';
 import { BottomSheet } from '../BottomSheet';
 import {
@@ -63,7 +64,7 @@ const styles = StyleSheet.create({
   },
   valueText: {
     fontSize: 44,
-    fontWeight: '800',
+    fontFamily: Fonts.semibold,
     letterSpacing: -1,
   },
   rulerWrap: {

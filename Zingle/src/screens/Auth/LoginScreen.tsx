@@ -17,8 +17,11 @@ const styles = StyleSheet.create({
   },
   forgot: {
     alignItems: 'flex-end',
-    marginTop: metrics.spacing.xs,
-    marginBottom: metrics.spacing.lg,
+    marginTop: -metrics.spacing.xs,
+    marginBottom: metrics.spacing.sm,
+  },
+  submit: {
+    marginTop: metrics.spacing.sm,
   },
 });
 
@@ -107,6 +110,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
           onPress={handleLogin}
           disabled={loading}
           loading={loading}
+          style={styles.submit}
         />
       </View>
     </AuthScreenLayout>
